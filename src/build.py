@@ -6,14 +6,16 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lessonkit import (E, Page, box, build, cards, code_block, dropdown, fig, figs, flow, hero, kbd, mk, prompt, section,
+from lessonkit import (E, Page, app_window, box, build, cards, code_block, dropdown, fig, figs, flow, hero, kbd, mk, prompt, section,
                        shot_list_section, step, table, ui, wrap)
+from tips import tips_page
 from mocks_geumjin import (DEMO_CSS, GJ_CSS, PROGRESS_CSS, demo, PROGRESS_JS, bar_chart, browser, cc_ai, cc_input, cc_perm, cc_tool, cc_user,
                            cc_welcome, cc_window, checkbox, claude_web, dept_page, explorer, installer, passed, progress_bar,
                            ps_prompt, ps_window, start_search, wbtn)
 
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
 SITE = "https://geumjin-vibe.edunfuture.workers.dev/"
+DESK_CSS = """.dk{display:flex;min-height:200px}.dk-side{width:130px;background:#f6f4ef;border-right:1px solid #e6e2d8;padding:8px}.dk-tab{padding:6px 8px;border-radius:6px;margin:3px 0}.dk-tab.on{background:#fff;font-weight:700}.dk-tab.dim{color:#8a8f98}.dk-main{flex:1;padding:14px}.dk-main p{color:#5f6368;margin:6px 0 10px}.dk-in{margin-top:14px;border:1px solid #d6d9de;border-radius:10px;padding:8px 10px;color:#8a8f98}"""
 PC = "설치와 실습은 PC에서 합니다. 휴대폰은 복습용으로 보세요. 그림은 탭하면 크게 볼 수 있습니다."
 DESK = "C:\\Users\\금대리\\Desktop"
 WORK = DESK + "\\geumjin-vibe"
@@ -120,6 +122,8 @@ TERMS = [  # 용어, 뜻, 금진 비유, 단계
     ("pip / 패키지", "Python에 기능 묶음(패키지)을 내려받아 더하는 도구. 예: pandas, openpyxl", "공구함에 부품을 채워 주는 배달원", "2-12"),
     ("권한 요청", "Claude Code가 파일을 바꾸거나 명령을 실행하기 전에 허락을 묻는 창", "작업 전 반장 결재", "2-14"),
     ("슬래시 명령", "/help, /clear처럼 Claude Code 안에서 쓰는 짧은 명령", "설비의 단축 버튼", "2-15"),
+    ("토큰", "AI가 읽고 쓰는 글자 조각의 양. 사용량을 세는 단위", "일꾼의 연료 — 긴 대화·큰 파일일수록 많이 듦", "💡 탭"),
+    ("모델(Opus·Sonnet·Haiku)", "같은 Claude 안에서 능력과 비용이 다른 등급. /model로 바꿈", "설계 반장 · 숙련 기능공 · 빠른 보조", "💡 탭"),
     ("Git / 커밋", "파일의 변경 이력을 저장하는 도구 / 저장 시점 하나", "변경점 관리대장과 그 한 줄", "2-20"),
     ("CLAUDE.md", "작업 폴더에 두는 규칙 파일. Claude Code가 매번 먼저 읽음", "현장 안전수칙 게시물", "3-3"),
 ]
@@ -151,7 +155,7 @@ glossary = wrap(
     + section("개념 비유 7가지", "벽지 공장 현장에 빗대어")
     + concept_html
     + prompt("[나쁜 예]\n생산 대시보드 만들어줘.\n\n[좋은 예]\n목적: 호기별 주간 불량률을 한눈에 보고 싶어.\n재료: 이 폴더의 mes_sample.xlsx (컬럼: 생산일자, 호기, 생산량(m), 불량량(m))\n결과 모양: 호기 1~3별 불량률 막대차트 1개 + 주차 선택 필터, index.html 한 파일\n금지사항: 원본 엑셀은 수정하지 마. 수정 전에 계획부터 보여줘.")
-    + section("용어 카드 25개", "누르면 뜻과 비유가 펼쳐집니다")
+    + section("용어 카드 27개", "누르면 뜻과 비유가 펼쳐집니다")
     + term_html
     + section("용어 퀴즈", "5문항 중 4개 이상 맞히면 통과")
     + quiz_html)
@@ -314,6 +318,23 @@ m1 = wrap(
           "Windows 업데이트가 밀려 있지 않은지 확인", "다음 시간에 노트북과 충전기 지참"],
          ok="4개 항목을 강사에게 ‘이상 없음’ 또는 ‘문제 있음’으로 알렸습니다.",
          stuck="회사 보안 프로그램이 설치를 막을 수 있습니다. 문제가 있으면 모듈 2 전에 전산 담당에게 요청해 주세요.", one=True)
+    + st("1-12", "Claude 데스크톱 앱 설치 (CLI의 짝꿍)", "PC에 Claude 앱을 설치해, 웹 대신 앱으로 쓰고 Claude Code(Code 탭)도 미리 열어 봅니다.",
+         [f"아래 {ui('⬇ Windows용 Claude 앱 내려받기')} 버튼 클릭 → 설치 파일 다운로드가 바로 시작됩니다",
+          "브라우저 아래(또는 오른쪽 위) 다운로드 목록에서 받은 설치 파일 실행 → 설치가 끝나면 앱이 자동으로 열림",
+          "웹(claude.ai)과 같은 계정으로 로그인",
+          f"앱 화면에서 {ui('Code')} 탭을 눌러 Claude Code 화면이 열리는지 확인"],
+         extra='<a class="dl g" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect">⬇ Windows용 Claude 앱 내려받기 (64비트)</a> '
+               '<a class="dl" href="https://claude.com/ko/download" target="_blank" rel="noopener">🌐 공식 다운로드 페이지 열기</a>'
+         + box("info", "앱과 CLI는 어떤 관계인가요?",
+               "같은 Claude Code를 두 가지 방식으로 씁니다. <b>CLI</b>(모듈 2에서 설치)는 PowerShell에서 글로 쓰고, <b>데스크톱 앱의 Code 탭</b>은 화면을 보며 씁니다. "
+               "이 과정은 CLI로 진행하고, 모듈 2에서 CLI 설치가 막히면 앱의 Code 탭이 <b>따라잡기 경로</b>가 됩니다. CLI는 앱이 없어도 따로 설치할 수 있습니다."),
+         ok="데스크톱 앱이 열리고 로그인돼 있으며, Code 탭을 누르면 작업 폴더를 고르는 화면이 나옵니다.",
+         stuck="첫 번째 버튼으로 다운로드가 시작되지 않으면 ‘공식 다운로드 페이지 열기’에서 Windows용 버튼을 누르세요. ARM 노트북(일부 서피스 등)은 페이지에서 ARM64용을 고릅니다. 회사 PC에서 설치가 막히면 1-11처럼 전산 담당에게 요청합니다.",
+         figure=fig("m1-12", "Claude 데스크톱 앱 — Code 탭", app_window(
+             "Claude",
+             '<div class="dk"><div class="dk-side"><div class="dk-tab">💬 채팅</div>' + mk('<div class="dk-tab on">⌨ Code</div>', 4, block=True)
+             + '<div class="dk-tab dim">🕘 최근 항목</div></div><div class="dk-main"><b>Claude Code</b><p>작업할 폴더를 고르면 이 폴더에서 Claude가 파일을 읽고 만듭니다.</p>'
+             '<span class="mbtn p">📁 폴더 선택</span><div class="dk-in">무엇을 만들까요?</div></div></div>', icon_color="#c96442")))
     + '<div class="next-mod">' + box("ok", "모듈 1 완료!", '수고하셨습니다. 다음은 <a href="#m2" data-go="m2">모듈 2 · CLI 환경 셋팅</a>입니다.') + "</div>",
     pc_note=PC)
 
@@ -376,7 +397,7 @@ m2 = wrap(
     # ── 2교시 ──
     + section("2교시 · 공구 3종 설치", "약 60분 · 한 줄씩, 성공 화면 확인 후 다음")
     + box("info", "설치 공식", "세 공구 모두 같은 순서입니다 — <b>확인 → 설치 → (PATH 등록) → 다시 확인</b>. 두 번째부터는 순서를 스스로 말해 보세요.")
-    + st("2-6", "Git 확인·설치 (세이브 카메라)", "되돌리기 도구 Git을 준비합니다. Windows에서 Claude Code를 쓰려면 꼭 필요합니다.",
+    + st("2-6", "Git 확인·설치 (세이브 카메라)", "되돌리기 도구 Git을 준비합니다. 필수는 아니지만 설치를 권장합니다 — 있으면 클로가 저장·되돌리기를 하고, 명령을 더 안정적으로 실행합니다.",
          ["<code>git --version</code> 입력", "버전이 나오면 2-7로. ‘인식되지 않습니다’가 나오면 git-scm.com에서 Windows용 설치 파일 받기",
           f"설치 화면은 바꾸지 말고 {ui('Next')}를 계속 → {ui('Install')} → {ui('Finish')}", "PowerShell을 닫고 다시 열어 1번 다시 실행"],
          extra=code_block("Git 확인", text="git --version\n", cid="c-git"),
@@ -465,7 +486,9 @@ m2 = wrap(
     + st("2-15", "첫 질문과 슬래시 명령", "클로에게 말을 걸고 기본 명령을 써 봅니다.",
          ["입력칸에 아래 질문을 붙여넣고 Enter", "<code>/help</code> 입력 → 도움말 훑어보기", "<code>/clear</code> 입력 → 대화 맥락 비우기"],
          extra=prompt("너는 무엇을 해 줄 수 있어? 초보자용으로 5줄만 설명해줘.")
-         + table(["명령", "뜻"], [["/help", "도움말"], ["/clear", "대화 맥락 정리(새로 시작)"], ["/exit", "Claude Code 종료"], ["/login", "다시 로그인"]]),
+         + table(["명령", "뜻"], [["/help", "도움말"], ["/clear", "대화 맥락 정리(새로 시작)"], ["/exit", "Claude Code 종료"], ["/login", "다시 로그인"],
+                                 ["/model", "모델 바꾸기(Opus·Sonnet·Haiku)"], ["/usage", "내 요금제 사용량 확인"]])
+         + box("info", "모델 고르기와 토큰 아끼기", '어떤 일에 어떤 모델을 쓰면 좋은지, 사용량을 아끼는 요령은 <a href="#tips" data-go="tips">💡 모델·토큰 꿀팁</a> 탭에 정리했습니다.'),
          ok="클로가 한국어로 5줄 정도 답합니다.",
          figure=fig("m2-15", "첫 질문", cc_window(cc_welcome() + cc_user("너는 무엇을 해 줄 수 있어? 초보자용으로 5줄만 설명해줘.", n=1)
                                                + cc_ai("1. 이 폴더의 파일을 읽고 설명해요.\n2. 새 파일(웹 페이지 등)을 만들어요.\n3. 엑셀 데이터를 정리·계산해요.\n4. 오류가 나면 원인을 찾아 고쳐요.\n5. 바꾸기 전에 항상 허락을 물어요.")
@@ -596,9 +619,9 @@ ap = wrap(
     + PROGRESS_JS)
 
 pages = [Page("home", "", "홈", home), Page("terms", "★", "캐릭터·용어", glossary), Page("m1", "1", "모듈 1", m1), Page("m2", "2", "모듈 2", m2),
-         Page("m3", "3", "모듈 3", m3), Page("m4", "4", "모듈 4", m4), Page("ap", "+", "부록", ap)]
+         Page("m3", "3", "모듈 3", m3), Page("m4", "4", "모듈 4", m4), Page("tips", "💡", "모델·토큰", tips_page()), Page("ap", "+", "부록", ap)]
 build(OUT / "index.html", pages, title="금진 바이브코딩 · 말로 만드는 내 업무 도구",
       description="㈜금진 임직원을 위한 바이브코딩 실습 교안 — 개념 이해부터 Claude Code CLI 환경 셋팅까지 단계별로 따라 합니다.",
       brand=("GJ", "말로 만드는 내 업무 도구", "㈜금진 바이브코딩"), site_url=SITE, og_image="og_image.jpg",
-      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}")
+      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + DESK_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}")
 print("wrote", OUT / "index.html")
