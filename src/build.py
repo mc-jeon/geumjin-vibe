@@ -8,12 +8,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lessonkit import (E, Page, box, build, cards, code_block, dropdown, fig, figs, flow, hero, kbd, mk, prompt, section,
                        shot_list_section, step, table, ui, wrap)
-from mocks_geumjin import (GJ_CSS, PROGRESS_CSS, PROGRESS_JS, bar_chart, browser, cc_ai, cc_input, cc_perm, cc_tool, cc_user,
+from mocks_geumjin import (DEMO_CSS, GJ_CSS, PROGRESS_CSS, demo, PROGRESS_JS, bar_chart, browser, cc_ai, cc_input, cc_perm, cc_tool, cc_user,
                            cc_welcome, cc_window, checkbox, claude_web, dept_page, explorer, installer, passed, progress_bar,
                            ps_prompt, ps_window, start_search, wbtn)
 
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else ".")
-SITE = "https://mc-jeon.github.io/geumjin-vibe/"
+SITE = "https://geumjin-vibe.edunfuture.workers.dev/"
 PC = "설치와 실습은 PC에서 합니다. 휴대폰은 복습용으로 보세요. 그림은 탭하면 크게 볼 수 있습니다."
 DESK = "C:\\Users\\금대리\\Desktop"
 WORK = DESK + "\\geumjin-vibe"
@@ -54,6 +54,7 @@ home = hero("㈜금진 · AI 실무 역량 과정", "말로 만드는<br><em>내
     + section("이 교안 쓰는 법", "단계마다 통과 체크")
     + box("ok", "단계 카드", "🎯 목표 → 번호 순서대로 따라 하기 → ✅ 성공하면 → ⚠ 막히면. 글 번호와 그림의 빨간 번호가 같습니다.")
     + box("info", "통과 체크", "내 화면이 '성공하면'과 같으면 초록 체크를 누르세요. 다음 단계가 열리고 위쪽 진도 막대가 올라갑니다. 진도는 내 브라우저에만 저장됩니다. 복습할 때는 '전체 펼치기'를 누르세요.")
+    + box("info", "🎬 강사 시연 상자", "보라색 ‘강사 시연’ 상자가 나오면 강사 화면과 같은 순서의 장면·요청문·명령이 들어 있습니다. 강사가 몇 번째 장면인지 짚으며 보고, 요청문과 명령은 복사해서 그대로 따라 할 수 있습니다.")
     + box("info", "교실 신호", "모니터 위에 초록 카드(통과) 또는 빨강 카드(도움 필요)를 올려 주세요. 빨강 카드를 보면 보조강사가 갑니다.")
     + section("실습 파일")
     + '<a class="dl g" href="practice/mes_sample.xlsx" download>📥 가상 생산실적(엑셀)</a> <a class="dl" href="practice/mes_sample.csv" download>📥 같은 데이터(CSV)</a>'
@@ -199,9 +200,38 @@ m1 = wrap(
     + box("no", "공개 배포 금지 자료", "개인정보·기밀 데이터는 외부 공개 배포(GitHub Pages)에 올리지 않습니다.")
     + box("info", "삭제·배포는 확인 후", "AI에게 바로 맡기지 말고 변경 내용을 먼저 확인합니다.")
     + st("1-1", "강사 시연 보고 한 줄 적기", "AI 일꾼이 10분 만에 도구를 만드는 장면을 보고, 내가 맡기고 싶은 일을 정합니다.",
-         ["강사 화면을 봅니다(손은 대지 않아요).", "강사가 보낸 요청문 3개가 무엇이었는지 기억합니다.",
+         [f"아래 {ui('🎬 강사 시연')} 상자를 열어 두고 강사 화면을 봅니다.",
+          "강사가 지금 몇 번째 장면인지 상자에서 짚으며 따라갑니다. 요청문은 상자에 있는 그대로입니다.",
+          "(선택) claude.ai에 로그인돼 있다면 mes_sample.xlsx를 첨부하고 같은 요청문을 붙여넣어 함께 해 봅니다.",
           "포스트잇에 “AI 일꾼에게 가장 먼저 맡기고 싶은 일” 1줄을 적어 칠판에 붙입니다."],
-         ok="포스트잇이 칠판에 붙어 있으면 통과입니다. 4교시에 다시 씁니다.", one=True)
+         extra=demo("가상 MES 데이터 → 10분 대시보드",
+                    "강사는 모듈 2에서 배울 화면(PowerShell + Claude Code)으로 시연합니다. 지금은 화면 흐름만 따라오면 됩니다. "
+                    "데이터는 홈 탭의 가상 생산실적(mes_sample.xlsx)과 같습니다.",
+                    [{"do": "빈 작업 폴더 <code>demo</code>에 mes_sample.xlsx를 넣고 <code>claude</code>를 실행합니다.",
+                      "see": "주황 테두리 환영 상자와 입력칸(&gt;)이 보입니다."},
+                     {"do": "데이터를 먼저 읽힙니다 — 고치지 말고 설명만 하라고 합니다.",
+                      "say": "이 폴더의 엑셀 파일을 열어서 어떤 컬럼이 있고, 이상해 보이는 값은 몇 개인지 초보자용으로 설명해줘. 아직 수정하지 마.",
+                      "see": "컬럼 7개(생산일자·제품코드·호기·생산량·불량량·가동시간·오븐온도), 66행, 9월 평일 1~3호기라는 설명이 나옵니다."},
+                     {"do": "대시보드를 만들어 달라고 합니다. 권한 창이 뜨면 <b>1. Yes</b>를 고릅니다.",
+                      "say": "호기별 불량률(불량량÷생산량)을 막대 차트로 보여주는 index.html을 만들어줘.\n이상한 값은 계산에서 빼고, 뺀 건수는 화면 아래에 표시해줘. 원본 엑셀은 수정하지 마.",
+                      "see": "폴더에 index.html이 생기고, 크롬에서 열면 <b>1호기 2.7% · 2호기 3.7% · 3호기 1.9%</b> 막대가 보입니다."},
+                     {"do": "대화로 고칩니다 — 기능 하나, 색 하나.",
+                      "say": "요일별로도 볼 수 있게 선택 버튼을 추가해줘. 금진 느낌이 나도록 베이지와 남색 톤으로 바꿔줘.",
+                      "see": "크롬을 새로고침하면 요일 버튼이 생기고 색이 바뀝니다."},
+                     {"do": "강사가 묻습니다: “제가 코드를 한 줄이라도 썼나요?”", "see": "답은 ‘아니요’. 말로 설명하고 결과를 확인했을 뿐입니다."}],
+                    follow="같은 흐름을 <b>1-9</b>(웹에서 엑셀 → 차트)와 <b>모듈 3</b>(CLI로 데이터 → 대시보드)에서 직접 합니다."),
+         ok="시연 장면 5개를 따라갔고, 포스트잇이 칠판에 붙어 있으면 통과입니다. 포스트잇은 4교시에 다시 씁니다.",
+         figure=figs(
+             fig("m1-01a", "시연 장면 2 — 데이터 읽히기", cc_window(
+                 cc_welcome() + cc_user("이 폴더의 엑셀 파일을 열어서 어떤 컬럼이 있고, 이상해 보이는 값은 몇 개인지 설명해줘. 아직 수정하지 마.")
+                 + cc_ai("mes_sample.xlsx — 66행, 컬럼 7개\n생산일자 · 제품코드 · 호기 · 생산량(m) · 불량량(m) · 가동시간(분) · 오븐온도(℃)\n이상해 보이는 값: 없음",),
+                 path="C:\\Users\\강사\\Desktop\\demo")),
+             fig("m1-01b", "시연 장면 3 — 권한 창에서 1. Yes", cc_window(
+                 cc_user("호기별 불량률을 막대 차트로 보여주는 index.html을 만들어줘…")
+                 + cc_perm("Do you want to create index.html?", ["Yes", "Yes, allow all edits during this session", "No"])
+                 + cc_tool("Write(index.html) — 차트 + 호기별 표"), path="C:\\Users\\강사\\Desktop\\demo")),
+             fig("m1-01c", "시연 장면 3 결과 — 크롬에서 연 대시보드", browser(
+                 "file:///C:/Users/강사/Desktop/demo/index.html", chart, tab="호기별 불량률"))))
     # ── 2교시 ──
     + section("2교시 · 개념 지도, 용어, 데이터 신호등", "약 50분")
     + st("1-2", "개념 지도 8개 정거장", "터미널에서 배포까지 큰 그림을 캐릭터로 이해합니다.",
@@ -484,14 +514,31 @@ m2 = wrap(
          extra=prompt("이 폴더를 git으로 저장 시작하고, 지금 상태를 '첫 저장'이라는 이름으로 저장해줘.")
          + prompt("제목 글자를 엄청 크게, 빨간색으로 바꿔줘.")
          + prompt("방금 바꾼 거 마음에 안 들어. 마지막 저장 상태로 되돌려줘.")
-         + box("info", "강사 화면에서 보기", "<code>git status</code>(무엇이 바뀌었나) · <code>git diff</code>(어떻게 바뀌었나) · <code>git log</code>(저장 기록)"),
+         + demo("세이브 카메라 속을 들여다보기 (git status · diff · log)",
+                "클로가 뒤에서 한 저장·되돌리기를 명령으로 직접 확인합니다. Claude Code 창은 그대로 두고 <b>PowerShell 창을 하나 더</b> 열어 강사와 같이 칩니다.",
+                [{"do": "새 PowerShell 창을 열고 작업 폴더로 이동합니다.", "cmd": ("c-demo-cd", "cd Desktop\\geumjin-vibe\n"),
+                  "see": "맨 아래 줄이 <code>…\\geumjin-vibe&gt;</code>로 바뀝니다."},
+                 {"do": "망가뜨리는 수정(빨간 큰 제목)을 한 직후, 무엇이 바뀌었는지 봅니다.", "cmd": ("c-demo-status", "git status\n"),
+                  "see": "<code>modified: index.html</code> — 저장 이후 index.html이 바뀌었다는 뜻입니다."},
+                 {"do": "어떻게 바뀌었는지 봅니다. 화면이 멈추면 <kbd>q</kbd>를 눌러 빠져나옵니다.", "cmd": ("c-demo-diff", "git diff\n"),
+                  "see": "<span style='color:#b3372a'>빨간 − 줄</span>은 지워진 원래 내용, <span style='color:#1f8452'>초록 + 줄</span>은 새로 들어간 내용입니다."},
+                 {"do": "되돌리기를 마친 뒤 저장 기록을 봅니다.", "cmd": ("c-demo-log", "git status\ngit log --oneline\n"),
+                  "see": "<code>nothing to commit, working tree clean</code>(깨끗함)과 <code>첫 저장</code> 기록 1줄이 보입니다."}],
+                follow="명령은 화면을 보기만 하는 것이라 아무것도 바꾸지 않습니다. 안전하게 같이 쳐 보세요."),
          ok="빨간 큰 제목이 원래 제목으로 돌아왔습니다. ‘코드 수정하다 기존 것이 날아가도 되돌릴 수 있다’를 확인했습니다.",
          stuck="‘이름·이메일 설정이 필요하다’고 하면 “이름은 [금대리], 이메일은 [회사 메일]로 이 폴더에만 설정해줘”라고 보내세요.",
-         figure=fig("m2-20", "저장 → 망가뜨리기 → 되돌리기", cc_window(cc_user("이 폴더를 git으로 저장 시작하고 '첫 저장'으로 저장해줘.", n=1)
+         figure=figs(fig("m2-20", "저장 → 망가뜨리기 → 되돌리기", cc_window(cc_user("이 폴더를 git으로 저장 시작하고 '첫 저장'으로 저장해줘.", n=1)
                                                              + cc_tool("git init · git commit -m \"첫 저장\"")
                                                              + cc_user("제목 글자를 엄청 크게, 빨간색으로 바꿔줘.", n=2)
                                                              + cc_user("마지막 저장 상태로 되돌려줘.", n=3)
-                                                             + cc_tool("git restore index.html — 첫 저장 상태로 복원"))))
+                                                             + cc_tool("git restore index.html — 첫 저장 상태로 복원"))),
+                     fig("m2-20b", "강사 시연 — 두 번째 PowerShell에서 git 보기", ps_window([
+                         ps_prompt(path=WORK, cmd="git status"), "On branch main", "Changes not staged for commit:",
+                         html_line(span("er", "        modified:   index.html")), "",
+                         ps_prompt(path=WORK, cmd="git diff"),
+                         html_line(span("er", '-  <h1 style="color:#fff">관리팀 업무 소개</h1>')),
+                         html_line(span("ok", '+  <h1 style="color:red;font-size:64px">관리팀 업무 소개</h1>')), "",
+                         ps_prompt(path=WORK, cmd="git log --oneline"), html_line(span("y", "a1b2c3d 첫 저장"))], title="Windows PowerShell — 두 번째 창"))))
     + st("2-21", "클리닉과 퇴장 체크", "모듈 3으로 가기 전에 작업대가 다 갖춰졌는지 확인합니다.",
          ["아래 8개 항목을 하나씩 확인", "안 되는 항목이 있으면 빨강 카드 → 보조강사와 해결", "모두 되면 초록 카드"],
          extra=table(["#", "확인 항목", "확인 방법"], [
@@ -553,5 +600,5 @@ pages = [Page("home", "", "홈", home), Page("terms", "★", "캐릭터·용어"
 build(OUT / "index.html", pages, title="금진 바이브코딩 · 말로 만드는 내 업무 도구",
       description="㈜금진 임직원을 위한 바이브코딩 실습 교안 — 개념 이해부터 Claude Code CLI 환경 셋팅까지 단계별로 따라 합니다.",
       brand=("GJ", "말로 만드는 내 업무 도구", "㈜금진 바이브코딩"), site_url=SITE, og_image="og_image.jpg",
-      extra_css=GJ_CSS + PROGRESS_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}")
+      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}")
 print("wrote", OUT / "index.html")

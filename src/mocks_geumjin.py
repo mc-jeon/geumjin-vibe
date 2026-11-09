@@ -353,6 +353,37 @@ PROGRESS_JS = r"""
 """
 
 
+def demo(title, intro, scenes, follow=""):
+    """강사 시연 상자. 수강생이 강사 화면과 같은 순서로 보고 따라 할 수 있게 장면별로 보여준다.
+    scenes: [{'do': 강사가 하는 일(HTML), 'say': 붙여넣는 요청문(복사 카드) 또는 None, 'cmd': (cid, 명령 텍스트) 또는 None,
+              'see': 화면에 나오는 것(HTML)}]"""
+    from lessonkit import code_block, prompt
+    lis = []
+    for i, s in enumerate(scenes, 1):
+        say = prompt(s["say"]) if s.get("say") else ""
+        cmd = code_block("따라 칠 명령", text=s["cmd"][1], cid=s["cmd"][0]) if s.get("cmd") else ""
+        see = f'<div class="demo-see">👀 화면: {s["see"]}</div>' if s.get("see") else ""
+        lis.append(f'<li><span class="demo-n">장면 {i}</span><div class="demo-do">{s["do"]}</div>{say}{cmd}{see}</li>')
+    fol = f'<div class="demo-follow">🙋 따라 하기 · {follow}</div>' if follow else ""
+    return (f'<div class="demo"><div class="demo-h">🎬 강사 시연 <b>{E(title)}</b><small>강사 화면과 같은 순서로 보세요</small></div>'
+            f'<p class="demo-intro">{intro}</p><ol class="demo-s">{"".join(lis)}</ol>{fol}</div>')
+
+
+DEMO_CSS = r"""
+.demo{border:2px solid #7c5cff;background:#f7f4ff;border-radius:14px;padding:12px 14px;margin:12px 0}
+.demo-h{font-size:15px;color:#4b2fc0;font-weight:900;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}
+.demo-h b{color:#1b1440}.demo-h small{color:#6d62a8;font-weight:600;font-size:12.5px}
+.demo-intro{margin:6px 0 4px;font-size:14px;color:#3d3566}
+.demo-s{list-style:none;margin:6px 0 0;padding:0;counter-reset:none}
+.demo-s>li{background:#fff;border:1px solid #e2dbff;border-radius:10px;padding:9px 11px;margin:8px 0}
+.demo-n{display:inline-block;background:#7c5cff;color:#fff;font-weight:800;font-size:12px;border-radius:6px;padding:1px 8px;margin-bottom:4px}
+.demo-do{font-size:14.5px}
+.demo-see{margin-top:6px;font-size:13.5px;color:#3d3566;background:#f3f0ff;border-radius:8px;padding:6px 9px}
+.demo-follow{margin-top:8px;padding:8px 11px;border-radius:10px;background:#fff6dc;font-size:14px}
+.demo .prompt,.demo .code{margin-top:6px}
+"""
+
+
 def progress_bar(label):
     """탭 위쪽 진도 막대(진도 스크립트가 채움)."""
     return (f'<div class="prog"><b>📍 {E(label)}</b><div class="bar"><i></i></div><span class="cnt">0 / 0 단계 통과</span>'
