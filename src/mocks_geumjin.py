@@ -38,9 +38,9 @@ def cc_window(body_html, title="PowerShell — claude", path="C:\\Users\\금대�
             f'<div class="cc-body"><div class="cc-path">{E(path)}</div>{body_html}</div>')
 
 
-def cc_welcome(extra=""):
+def cc_welcome(extra="", cwd="geumjin-vibe"):
     return (f'<div class="cc-welcome"><b>✻ Welcome to Claude Code!</b><div class="cc-dim">/help for help, /status for your current setup</div>'
-            f'<div class="cc-dim">cwd: geumjin-vibe</div>{extra}</div>')
+            f'<div class="cc-dim">cwd: {E(cwd)}</div>{extra}</div>')
 
 
 def cc_user(text, n=None):

@@ -1,6 +1,7 @@
 """금진 바이브코딩 교안 빌드.
 실행: python src/build.py .   → ./index.html
 모듈 1·2는 실제 내용, 모듈 3·4는 페이지 자리만(실데이터 확정 후 채움).
+모듈 5(프로젝트 폴더·스킬·MCP)는 src/ext.py.
 """
 import sys
 from pathlib import Path
@@ -9,6 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lessonkit import (E, Page, app_window, box, build, cards, code_block, dropdown, fig, figs, flow, hero, kbd, mk, prompt, section,
                        shot_list_section, step, table, ui, wrap)
 from tips import tips_page
+from ext import EXT_CSS, ext_page
+from mocks_notion import NT_CSS
 from mocks_geumjin import (DEMO_CSS, GJ_CSS, PROGRESS_CSS, demo, PROGRESS_JS, bar_chart, browser, cc_ai, cc_input, cc_perm, cc_tool, cc_user,
                            cc_welcome, cc_window, checkbox, claude_web, dept_page, explorer, installer, passed, progress_bar,
                            ps_prompt, ps_window, start_search, wbtn)
@@ -36,19 +39,22 @@ def span(cls, text):
 
 # ════════════════════════════ 홈 ════════════════════════════
 home = hero("㈜금진 · AI 실무 역량 과정", "말로 만드는<br><em>내 업무 도구</em>",
-            "코딩을 몰라도 괜찮습니다. 내 업무를 말로 설명하면 AI 일꾼이 도구를 만들어 줍니다. 4시간짜리 모듈 4개를 단계마다 확인하며 따라갑니다.") + wrap(
-    section("이 과정에서 하는 것", "4시간 모듈 4개 · 총 16시간")
+            "코딩을 몰라도 괜찮습니다. 내 업무를 말로 설명하면 AI 일꾼이 도구를 만들어 줍니다. 4시간짜리 모듈 4개를 단계마다 확인하며 따라가고, 마지막에 스킬과 MCP로 마무리합니다.") + wrap(
+    section("이 과정에서 하는 것", "4시간 모듈 4개 + 마무리 모듈 5")
     + cards([("💡", "모듈 1 · 이해와 웹 체험", "바이브코딩이 무엇인지 알고, 설치 없이 웹에서 첫 페이지를 만듭니다."),
              ("🛠", "모듈 2 · CLI 환경 셋팅", "터미널을 열고 Git·Claude Code·Python을 설치해 내 PC 작업대를 꾸립니다."),
              ("📊", "모듈 3 · 데이터 기본기", "엑셀을 AI에게 읽히고 대시보드를 만든 뒤 원본과 대조합니다."),
              ("🏭", "모듈 4 · 부서별 실전", "부서별 트랙으로 내 업무 도구를 완성하고 공유합니다.")], cols=4)
+    + box("info", "🔌 모듈 5 · 프로젝트 폴더, 스킬, MCP(노션)", '바이브코딩을 마친 뒤 마지막에 합니다. 규칙은 폴더에(CLAUDE.md), 잘된 방법은 스킬 파일에, 바깥 도구(노션)는 MCP로 연결합니다. '
+          '<a href="#m5" data-go="m5">모듈 5 열기</a>')
     + section("진행 순서")
-    + flow([("모듈 1", "이해 + 웹 체험"), ("모듈 2", "CLI 작업대 준비"), ("모듈 3", "데이터 → 대시보드"), ("모듈 4", "부서별 도구 완성")])
+    + flow([("모듈 1", "이해 + 웹 체험"), ("모듈 2", "CLI 작업대 준비"), ("모듈 3", "데이터 → 대시보드"), ("모듈 4", "부서별 도구 완성"), ("모듈 5", "스킬·MCP로 마무리")])
     + table(["모듈", "시간", "내용", "준비물", "교안"], [
         ["모듈 1", "4시간", "바이브코딩 개념·용어, Claude 웹에서 첫 페이지와 차트", "Claude 유료 계정, 크롬", "준비 완료"],
         ["모듈 2", "4시간+ (현장 조절)", "PowerShell, Git·Claude Code·Python 설치, 첫 대화, 되돌리기", "노트북(설치 권한), 충전기", "준비 완료"],
         ["모듈 3", "4시간", "데이터 읽히기·정제·대시보드·검증, 내 도구 설계서", "모듈 2 완료 PC", "실데이터 확정 후"],
-        ["모듈 4", "4시간", "부서별 트랙 A–E 실습, 검증·공유·시연", "마스킹한 부서 데이터", "실데이터 확정 후"]])
+        ["모듈 4", "4시간", "부서별 트랙 A–E 실습, 검증·공유·시연", "마스킹한 부서 데이터", "실데이터 확정 후"],
+        ["모듈 5", "약 3시간 30분", "프로젝트 폴더 구성(CLAUDE.md), 스킬 만들기·실행, MCP 개념과 노션 연결 실습", "모듈 2 완료 PC, 노션 계정(무료 가능)", "준비 완료"]])
     + section("꼭 지킬 원칙 3가지")
     + box("info", "1. 한 번에 하나씩", "AI에게 여러 가지를 한꺼번에 시키지 않습니다. 하나 바꾸고 확인하고 저장합니다.")
     + box("warn", "2. 결과는 원본과 대조", "AI도 틀릴 수 있습니다. 숫자는 원본 엑셀에서 3개 이상 직접 확인합니다.")
@@ -59,7 +65,8 @@ home = hero("㈜금진 · AI 실무 역량 과정", "말로 만드는<br><em>내
     + box("info", "🎬 강사 시연 상자", "보라색 ‘강사 시연’ 상자가 나오면 강사 화면과 같은 순서의 장면·요청문·명령이 들어 있습니다. 강사가 몇 번째 장면인지 짚으며 보고, 요청문과 명령은 복사해서 그대로 따라 할 수 있습니다.")
     + box("info", "교실 신호", "모니터 위에 초록 카드(통과) 또는 빨강 카드(도움 필요)를 올려 주세요. 빨강 카드를 보면 보조강사가 갑니다.")
     + section("실습 파일")
-    + '<a class="dl g" href="practice/mes_sample.xlsx" download>📥 가상 생산실적(엑셀)</a> <a class="dl" href="practice/mes_sample.csv" download>📥 같은 데이터(CSV)</a>'
+    + '<a class="dl g" href="practice/mes_sample.xlsx" download>📥 가상 생산실적(엑셀)</a> <a class="dl" href="practice/mes_sample.csv" download>📥 같은 데이터(CSV)</a> '
+    + '<a class="dl g" href="practice/mes_sample_oct.xlsx" download>📥 10월 생산실적(엑셀 · 모듈 5)</a>'
     + '<p style="margin-top:10px;color:var(--tx2)">실습 데이터는 모두 교육용 가상 데이터이며 실제 ㈜금진의 데이터가 아닙니다. 그림은 실제 화면을 단순화한 모형입니다.</p>')
 
 # ════════════════════════════ 캐릭터·용어 ════════════════════════════
@@ -125,7 +132,11 @@ TERMS = [  # 용어, 뜻, 금진 비유, 단계
     ("토큰", "AI가 읽고 쓰는 글자 조각의 양. 사용량을 세는 단위", "일꾼의 연료 — 긴 대화·큰 파일일수록 많이 듦", "💡 탭"),
     ("모델(Opus·Sonnet·Haiku)", "같은 Claude 안에서 능력과 비용이 다른 등급. /model로 바꿈", "설계 반장 · 숙련 기능공 · 빠른 보조", "💡 탭"),
     ("Git / 커밋", "파일의 변경 이력을 저장하는 도구 / 저장 시점 하나", "변경점 관리대장과 그 한 줄", "2-20"),
-    ("CLAUDE.md", "작업 폴더에 두는 규칙 파일. Claude Code가 매번 먼저 읽음", "현장 안전수칙 게시물", "3-3"),
+    ("CLAUDE.md", "작업 폴더에 두는 규칙 파일. Claude Code가 매번 먼저 읽음", "현장 안전수칙 게시물", "5-3"),
+    (".claude 폴더", "프로젝트 폴더 안의 Claude Code 전용 폴더. 스킬·설정이 들어 있음", "일꾼 전용 서랍", "5-2"),
+    ("스킬(Skill)", "잘된 작업 방법을 적어 둔 파일(SKILL.md). /이름 으로 다시 실행", "작업표준서", "5-7"),
+    ("MCP", "AI 일꾼이 노션 같은 바깥 프로그램과 연결되는 표준 규격", "협력사 출입증과 전용 통로(표준 커넥터)", "5-11"),
+    ("OAuth(허용 로그인)", "비밀번호를 넘기지 않고, 해당 서비스 화면에서 ‘연결 허용’만 해 주는 로그인 방식", "방문증 발급 — 열쇠는 주지 않음", "5-14"),
 ]
 
 QUIZ = [
@@ -155,7 +166,7 @@ glossary = wrap(
     + section("개념 비유 7가지", "벽지 공장 현장에 빗대어")
     + concept_html
     + prompt("[나쁜 예]\n생산 대시보드 만들어줘.\n\n[좋은 예]\n목적: 호기별 주간 불량률을 한눈에 보고 싶어.\n재료: 이 폴더의 mes_sample.xlsx (컬럼: 생산일자, 호기, 생산량(m), 불량량(m))\n결과 모양: 호기 1~3별 불량률 막대차트 1개 + 주차 선택 필터, index.html 한 파일\n금지사항: 원본 엑셀은 수정하지 마. 수정 전에 계획부터 보여줘.")
-    + section("용어 카드 27개", "누르면 뜻과 비유가 펼쳐집니다")
+    + section(f"용어 카드 {len(TERMS)}개", "누르면 뜻과 비유가 펼쳐집니다")
     + term_html
     + section("용어 퀴즈", "5문항 중 4개 이상 맞히면 통과")
     + quiz_html)
@@ -600,7 +611,12 @@ ap = wrap(
         ["로그인 브라우저가 열리지 않음", "기본 브라우저 설정", "터미널에 나온 주소를 복사해 크롬에 붙여넣기"],
         ["한글 사용자 폴더에서 오류", "경로에 한글 포함", "작업 폴더를 C:\\work 처럼 영문 경로에 만들기"],
         ["응답이 이상하게 길어짐·엉뚱함", "대화 맥락이 꼬임", "/clear 후 다시 요청"],
-        ["작업을 멈추고 싶음", "—", "Esc(클로 작업 중단) 또는 Ctrl+C"]])
+        ["작업을 멈추고 싶음", "—", "Esc(클로 작업 중단) 또는 Ctrl+C"],
+        ["/monthly-report 가 ‘알 수 없는 명령’", "스킬 폴더를 아직 못 읽음 또는 위치가 다름", "/reload-skills → 그래도 안 되면 /exit 후 claude 다시 실행. 위치는 .claude\\skills\\이름\\SKILL.md"],
+        ["스킬 결과 모양이 매번 다름", "스킬 본문에 규칙이 빠짐", "“스킬에 ○○ 규칙을 추가해줘”로 보완(5-10)"],
+        ["claude mcp list 에 Needs authentication", "아직 노션 로그인 허용 전", "claude 실행 → /mcp → notion → Authenticate(5-14)"],
+        ["claude mcp list 에 Failed to connect", "네트워크가 mcp.notion.com 차단 또는 주소 오타", "강사에게 알리기 · claude mcp remove notion 후 다시 추가"],
+        ["노션 페이지를 못 찾음", "다른 워크스페이스로 허용함", "/mcp → notion → 다시 인증하고 워크스페이스 확인"]])
     + "<h3>되돌리기</h3>"
     + box("info", "클로에게 말로", "“마지막 저장 상태로 되돌려줘” · “저장 기록 보여줘” · “두 번 전 저장으로 돌아가줘”")
     + box("warn", "삭제·배포는 직접 확인", "파일 삭제, git push, 배포는 클로에게 바로 맡기지 말고 무엇이 바뀌는지 먼저 확인합니다.")
@@ -614,14 +630,16 @@ ap = wrap(
         ["3일 전", "강사 PC에서 모듈 1·2 전 단계 리허설 → 화면 문구가 다르면 교안 수정, 실제 캡처를 shots/에 저장", "전체"],
         ["3일 전", "1-1 라이브 시연용 demo 폴더 + 백업 완성본 준비(가상 MES 데이터)", "1-1"],
         ["3일 전", "캐릭터 이미지 11장 생성(기획안 ‘도입부 소스’ 탭의 프롬프트) — 지금은 이모지로 표시", "캐릭터·용어"],
+        ["1주 전", "교육생 노션 계정 안내(개인 이메일 무료 가입, 실습용 워크스페이스) · 사내망에서 notion.com, mcp.notion.com 접속 확인", "5-12~5-14"],
+        ["3일 전", "강사 PC에서 모듈 5 리허설 — /memory·/mcp 메뉴, 노션 허용 화면, 노션 도구 권한 창 문구를 확인하고 캡처 교체", "5-3, 5-14, 5-15"],
         ["당일", "포스트잇, 초록·빨강 신호 카드, 보조강사 1명 배치(모듈 2)", "1-1, 모듈 2"]])
     + shot_list_section()
     + PROGRESS_JS)
 
 pages = [Page("home", "", "홈", home), Page("terms", "★", "캐릭터·용어", glossary), Page("m1", "1", "모듈 1", m1), Page("m2", "2", "모듈 2", m2),
-         Page("m3", "3", "모듈 3", m3), Page("m4", "4", "모듈 4", m4), Page("tips", "💡", "모델·토큰", tips_page()), Page("ap", "+", "부록", ap)]
+         Page("m3", "3", "모듈 3", m3), Page("m4", "4", "모듈 4", m4), Page("m5", "5", "모듈 5", ext_page()), Page("tips", "💡", "모델·토큰", tips_page()), Page("ap", "+", "부록", ap)]
 build(OUT / "index.html", pages, title="금진 바이브코딩 · 말로 만드는 내 업무 도구",
-      description="㈜금진 임직원을 위한 바이브코딩 실습 교안 — 개념 이해부터 Claude Code CLI 환경 셋팅까지 단계별로 따라 합니다.",
+      description="㈜금진 임직원을 위한 바이브코딩 실습 교안 — 개념 이해, Claude Code CLI 환경 셋팅, 스킬·MCP(노션)까지 단계별로 따라 합니다.",
       brand=("GJ", "말로 만드는 내 업무 도구", "㈜금진 바이브코딩"), site_url=SITE, og_image="og_image.jpg",
-      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + DESK_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}")
+      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + DESK_CSS + NT_CSS + EXT_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}")
 print("wrote", OUT / "index.html")
