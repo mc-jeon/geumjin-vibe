@@ -14,7 +14,7 @@
 """
 from pathlib import Path
 
-from common import catchup, teach
+from common import catchup, gate, teach
 from lessonkit import E, app_window, box, cards, code_block, fig, figs, flow, kbd, mk, prompt, section, step, table, ui, wrap
 from mocks_geumjin import (bar_chart, browser, cc_ai, cc_input, cc_perm, cc_tool, cc_user, cc_welcome, cc_window, explorer, passed,
                            progress_bar, ps_prompt, ps_window)
@@ -22,6 +22,8 @@ from mocks_notion import make_side, nt_db, nt_page, nt_window
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILL_FILE = ROOT / "practice" / "skill_example" / "monthly-report" / "SKILL.md"
+WEATHER_FILE = ROOT / "practice" / "mcp_example" / "weather_server.py"
+EXCEL_FILE = ROOT / "practice" / "mcp_example" / "excel_server.py"
 PC = "설치와 실습은 PC에서 합니다. 휴대폰은 복습용으로 보세요. 그림은 탭하면 크게 볼 수 있습니다."
 DESK = "C:\\Users\\금대리\\Desktop"
 PROJ = DESK + "\\gj-report"
@@ -133,6 +135,27 @@ P_COMBO = """monthly-report 스킬 맨 끝에 단계를 하나 추가해줘.
 보고서를 만든 뒤 "노션에 올릴까요?"라고 묻는다. 내가 그렇다고 하면 노션 '금진 AI 실습' 페이지 아래에 '연도년 월월 생산 보고' 하위 페이지를 만들고 요약 3줄과 호기별 표를 넣는다.
 같은 제목의 페이지가 이미 있으면 새로 만들지 말고 나에게 알려준다."""
 MCP_ADD = "claude mcp add --transport http notion https://mcp.notion.com/mcp\n"
+P_SKILL_EASY = """방금 만든 월간 보고서가 마음에 들어. 다음 달에도 엑셀 파일 이름만 바꿔서 똑같이 만들 수 있게, 이 작업 방식을 이 폴더에서 쓰는 스킬로 만들어줘.
+이름은 monthly-report로 해줘.
+다 만들면 스킬을 어떻게 부르는지, 스킬 파일에 무엇을 적었는지 초보자용으로 알려줘."""
+P_MCP_EASY = """노션이랑 연결하고 싶어. 노션이 공식으로 제공하는 MCP로 이 폴더에 연결 설정을 해줘.
+내가 직접 해야 할 일이 있으면 순서대로 초보자용으로 알려줘."""
+P_MCP_WEATHER = """날씨를 알려주는 MCP를 만들어서 이 폴더에 연결해줘.
+- 내 PC에는 Python이 있으니 Python으로 만들고, 필요한 부품 설치까지 해줘
+- 날씨는 열쇠(API 키)가 필요 없는 Open-Meteo를 써줘
+- 도시 이름을 말하면 지금 기온·습도·강수량을 알려주게
+- 프로그램 파일은 mcp 폴더에 두고, Claude Code 등록까지 해줘
+- 설치된 부품 버전에 맞게 만들고, 등록한 뒤 claude mcp list로 연결(Connected)됐는지 직접 확인해줘
+- 다 끝나면 내가 해야 할 일을 순서대로 초보자용으로 알려줘"""
+P_ASK_WEATHER = "천안 공장 지금 기온과 습도 알려줘. 벽지 건조에 신경 써야 할 날씨인지도 한 줄로 말해줘."
+P_MCP_EXCEL = """data 폴더의 생산실적 엑셀을 조회하는 MCP도 만들어서 이 폴더에 연결해줘.
+- Python으로, 프로그램 파일은 mcp 폴더에
+- 기능 2개: data 폴더의 엑셀 파일 목록 보기, 파일 하나로 호기별 생산량·불량량·불량률 계산하기
+- 불량률은 CLAUDE.md의 계산식 그대로. 원본 엑셀은 읽기만 하고 고치지 마
+- 설치된 부품 버전에 맞게 만들고, 등록한 뒤 claude mcp list로 연결(Connected)됐는지 직접 확인해줘"""
+P_ASK_EXCEL = "10월 생산실적에서 3호기 불량률 알려줘. 어떤 도구를 썼는지도 한 줄로 말해줘."
+P_ASK_BOTH = "천안 지금 습도와 10월 3호기 불량률을 같이 보고, 3호기 점검 메모를 두 줄로 써줘."
+MCP_FALLBACK = "pip install mcp openpyxl\nclaude mcp add weather -- python mcp/weather_server.py\nclaude mcp add mes -- python mcp/excel_server.py\nclaude mcp list\n"
 
 SEP_VALUES = [("1호기", 2.7), ("2호기", 3.7), ("3호기", 1.9)]
 OCT_VALUES = [("1호기", 2.1), ("2호기", 3.1), ("3호기", 4.1)]
@@ -168,7 +191,7 @@ SKILL_NP = ('\n'
 def ext_page():
     return wrap("".join([
         progress_bar("모듈 5 진도"),
-        section("모듈 5 · 스킬과 MCP(노션)", "약 3시간 30분 · 내 도구를 만든 뒤 마지막에"),
+        section("모듈 5 · 스킬과 MCP(노션)", "약 3시간 30분 + 심화(선택) 약 60분 · 내 도구를 만든 뒤 마지막에"),
         box("info", "이 모듈에서 얻는 것",
             "모듈 3·4에서는 규칙을 폴더에 적어 두고(CLAUDE.md) 도구를 만들었습니다. 이제 <b>잘된 작업 방법을 스킬 파일로 굳히고</b>, "
             "<b>바깥 도구(노션)를 MCP로 연결</b>해서, 다음 달에는 명령 한 줄로 같은 일을 끝냅니다."),
@@ -183,7 +206,12 @@ def ext_page():
             ["2:55 (15분)", "5-15 ~ 5-16", "읽기 → 내용 확인 → 쓰기 순서를 지키게 함", "노션에 10월 보고 페이지"],
             ["3:10 (15분)", "5-17 ~ 5-18", "데이터베이스는 시간이 되는 사람만. 5-18(스킬+MCP)은 강사 시연으로 대신할 수 있음", "노션에 9월 보고 페이지"],
             ["3:25 (10분)", "5-19", "연결 관리와 신호등 재확인. “저장 기록 보여줘”로 오늘 저장한 것 확인. 스킬로 만들 내 업무 1개 발표", "7항목 체크"],
-        ], note="시각에는 교시 사이 쉬는 시간 10분이 들어 있습니다. 노션 계정이 없는 사람은 5-12 전 쉬는 시간에 무료 가입을 마치게 합니다. 시간이 부족하면 5-10·5-17을 건너뛰고 5-18은 강사 시연으로 대신합니다."),
+            ["심화 (10분)", "5-20", "(선택) 공식 MCP · API · API 없음 세 경우를 표로. ‘출처 모르는 MCP는 설치하지 않는다’ 강조", "판단표 설명"],
+            ["심화 (25분)", "5-21", "(선택) 날씨 MCP를 말로 만들기. 권한 창의 pip·claude mcp add 명령을 소리 내어 읽게 함. /exit 후 다시 실행 확인", "천안 기온·습도 답"],
+            ["심화 (25분)", "5-22", "(선택) 엑셀 조회 MCP. 정답값 4.1%로 검증. 날씨+엑셀을 한 질문에 섞어 보기", "3호기 4.1%"],
+        ], note="시각에는 교시 사이 쉬는 시간 10분이 들어 있습니다. 노션 계정이 없는 사람은 5-12 전 쉬는 시간에 무료 가입을 마치게 합니다. 시간이 부족하면 5-10·5-17을 건너뛰고 5-18은 강사 시연으로 대신합니다. 심화(5-20~5-22, 약 60분)는 선택입니다. 시간이 남는 반이나 다음 날 복습 시간에 합니다."),
+        box("info", "🌱 쉬운 길 상자", "스킬(5-7)과 MCP(5-13)에는 <b>용어를 몰라도 되는 ‘쉬운 길’</b> 요청문이 함께 있습니다. 작업을 하다가 ‘이거 다음에도 쓰고 싶다’ 싶을 때 말로만 부탁하는 방법입니다. "
+            "본 요청문과 쉬운 길 중 편한 쪽 하나만 하면 되고, 결과는 같습니다."),
         catchup("모듈 3의 3-2(폴더 틀)·3-3(CLAUDE.md)이 낯설면 그 단계를 먼저 다시 보고 오세요. 1교시는 그 복습입니다."),
         cards([("📌", "CLAUDE.md", "<p>현장 안전수칙 게시물. 이 폴더에서 항상 지킬 규칙.</p>"),
                ("📋", "스킬", "<p>작업표준서. 잘된 작업 방법을 파일로 굳혀 <code>/이름</code>으로 다시 실행.</p>"),
@@ -192,13 +220,13 @@ def ext_page():
         # ── 1교시 ──
         section("1교시 · 새 프로젝트 폴더 — 모듈 3 복습", "약 30분 · 새 일은 새 폴더에서"),
         st("5-1", "새 프로젝트 폴더 만들기", "모듈 3에서 배운 폴더 틀(data·docs)에 결과물 자리(output)를 더해, 새 프로젝트 폴더를 혼자 만듭니다.",
-           ["PowerShell을 새로 열고 아래 명령을 복사해 붙여넣기(4-1에서 한 것과 같은 방법)", "아래 버튼으로 실습 파일 2개 내려받기",
+           ["PowerShell을 새로 열고 아래 명령을 복사해 붙여넣기(4-1에서 한 것과 같은 방법)"
+            + code_block("프로젝트 폴더 만들기", text="cd Desktop\nmkdir gj-report\ncd gj-report\nmkdir data, docs, output\n", cid="c-proj"),
+            "아래 버튼으로 실습 파일 2개 내려받기" + '<div style="margin-top:8px"><a class="dl g" href="practice/mes_sample.xlsx" download>📥 9월 생산실적 mes_sample.xlsx</a> '
+              '<a class="dl g" href="practice/mes_sample_oct.xlsx" download>📥 10월 생산실적 mes_sample_oct.xlsx</a></div>',
             f"탐색기 {ui('다운로드')} 폴더의 두 엑셀을 바탕화면 {ui('gj-report')} → {ui('data')} 폴더로 옮기기",
             "PowerShell에서 <code>dir data</code>로 두 파일이 보이는지 확인"],
-           extra=code_block("프로젝트 폴더 만들기", text="cd Desktop\nmkdir gj-report\ncd gj-report\nmkdir data, docs, output\n", cid="c-proj")
-           + '<a class="dl g" href="practice/mes_sample.xlsx" download>📥 9월 생산실적 mes_sample.xlsx</a> '
-             '<a class="dl g" href="practice/mes_sample_oct.xlsx" download>📥 10월 생산실적 mes_sample_oct.xlsx</a>'
-           + box("info", "왜 새 폴더인가요?", "프로젝트(일) 하나에 폴더 하나입니다. 클로는 <b>지금 열린 폴더 안</b>만 자기 작업대로 보기 때문에, 일이 다르면 폴더도 나눕니다."),
+           extra=box("info", "왜 새 폴더인가요?", "프로젝트(일) 하나에 폴더 하나입니다. 클로는 <b>지금 열린 폴더 안</b>만 자기 작업대로 보기 때문에, 일이 다르면 폴더도 나눕니다."),
            ok="<code>dir data</code>에 <b>mes_sample.xlsx</b>와 <b>mes_sample_oct.xlsx</b> 두 파일이 나옵니다.",
            stuck="mes_sample.xlsx는 모듈 1에서 받은 적이 있어 이름이 ‘mes_sample (1).xlsx’로 받아질 수 있습니다. F2로 ‘ (1)’을 지우거나 먼저 받은 파일을 옮기세요. ‘경로를 찾을 수 없습니다’가 나오면 바탕화면이 OneDrive에 있는 PC입니다. 첫 줄을 <code>cd ([Environment]::GetFolderPath('Desktop'))</code>로 바꾸세요.",
            figure=figs(
@@ -224,11 +252,11 @@ def ext_page():
                  "모듈 3·4에서는 결과물을 폴더 맨 위에 뒀지만, 매달 보고서처럼 결과물이 쌓이는 일은 output 폴더에 모읍니다."),
            ok="‘CLAUDE.md는 항상 읽는 규칙, 스킬은 부를 때 쓰는 작업 방법’이라고 말할 수 있으면 통과입니다.", one=True),
         st("5-3", "CLAUDE.md 만들기 — 이번에는 혼자서", "3-3에서 한 것을 새 폴더에서 다시 합니다. 프로젝트가 바뀌면 규칙 파일도 그 폴더에 새로 둡니다.",
-           [f"PowerShell(gj-report 폴더)에서 <code>claude --permission-mode default</code> 입력 → 폴더 신뢰 질문에 {ui('Yes, proceed')}",
-            "아래 요청문을 붙여넣고 Enter", f"권한 창에서 만들 파일이 <b>CLAUDE.md</b>인지 확인 → {ui('1. Yes')}",
+           [f"PowerShell(gj-report 폴더)에서 <code>claude --permission-mode default</code> 입력 → 폴더 신뢰 질문에 {ui('Yes, proceed')}"
+            + code_block("클로 실행(수동 모드)", text="claude --permission-mode default\n", cid="c-m5-claude"),
+            "아래 요청문을 붙여넣고 Enter" + prompt(P_CLAUDE_MD), f"권한 창에서 만들 파일이 <b>CLAUDE.md</b>인지 확인 → {ui('1. Yes')}",
             f"<code>/memory</code> 입력 → 목록에 CLAUDE.md가 있는지 확인 → {kbd('Esc')}"],
-           extra=code_block("클로 실행(수동 모드)", text="claude --permission-mode default\n", cid="c-m5-claude") + prompt(P_CLAUDE_MD)
-           + box("info", "이미 파일이 많은 폴더라면", "<code>/init</code>을 입력하면 클로가 폴더를 훑어보고 CLAUDE.md 초안을 만들어 줍니다. 오늘처럼 빈 폴더에서는 직접 불러 주는 편이 정확합니다."),
+           extra=box("info", "이미 파일이 많은 폴더라면", "<code>/init</code>을 입력하면 클로가 폴더를 훑어보고 CLAUDE.md 초안을 만들어 줍니다. 오늘처럼 빈 폴더에서는 직접 불러 주는 편이 정확합니다."),
            ok="탐색기 gj-report 폴더에 <b>CLAUDE.md</b>가 생겼고, <code>/memory</code> 목록에도 보입니다.",
            stuck="<code>/memory</code> 화면 모양은 버전에 따라 다릅니다. 목록에 CLAUDE.md 줄만 보이면 됩니다.",
            figure=figs(
@@ -238,8 +266,7 @@ def ext_page():
                                                           + '<div class="cc-perm"><b>Memory</b><div class="on">❯ 1. Project memory &nbsp; ./CLAUDE.md</div>'
                                                             '<div>&nbsp; 2. User memory &nbsp; ~/.claude/CLAUDE.md</div></div>')))),
         st("5-4", "규칙이 먹히는지 확인", "새 대화에서도 클로가 규칙을 알고 있는지 확인합니다.",
-           ["<code>/clear</code>로 대화를 비우기", "아래 질문을 붙여넣고 Enter", "답에 ‘data 원본 수정 금지’와 ‘불량률 계산식’이 들어 있는지 확인"],
-           extra=prompt(P_RULES),
+           ["<code>/clear</code>로 대화를 비우기", "아래 질문을 붙여넣고 Enter" + prompt(P_RULES), "답에 ‘data 원본 수정 금지’와 ‘불량률 계산식’이 들어 있는지 확인"],
            ok="방금 설명하지 않았는데도 클로가 <b>data 수정 금지 · 합계끼리 나누는 계산식 · 계획 먼저</b> 같은 규칙을 말합니다. CLAUDE.md를 읽은 것입니다.",
            stuck="규칙을 모른다고 하면 <code>/exit</code> 후 gj-report 폴더에서 <code>claude</code>를 다시 실행하세요. 다른 폴더에서 실행하면 그 폴더의 규칙만 읽습니다.",
            figure=fig("m5-04", "/clear 뒤에도 규칙을 안다", cc(cc_user("/clear", n=1) + cc_user(P_RULES, n=2)
@@ -250,9 +277,8 @@ def ext_page():
         box("info", "스킬은 언제 만드나요?", "<b>결과물이 마음에 들었을 때</b>입니다. 먼저 대화로 만들고 고쳐서 ‘이거다’ 싶은 결과를 얻은 다음, 그 방법을 파일로 굳힙니다. 아직 마음에 안 드는 방법을 굳히면 매번 마음에 안 드는 결과가 나옵니다."),
         flow([("① 만들기", "대화로 9월 보고서"), ("② 고치기", "마음에 들 때까지"), ("③ 굳히기", "스킬 파일로 저장"), ("④ 다시 쓰기", "/monthly-report 로 10월 보고서")]),
         st("5-5", "9월 월간 보고서 만들기", "작업지시서 4칸으로 첫 결과물을 만듭니다.",
-           ["아래 요청문을 붙여넣고 Enter", f"클로가 보여 준 계획을 읽고 “좋아, 진행해줘” 보내기 → 권한 창 {ui('1. Yes')}",
+           ["아래 요청문을 붙여넣고 Enter" + prompt(P_REPORT), f"클로가 보여 준 계획을 읽고 “좋아, 진행해줘” 보내기 → 권한 창 {ui('1. Yes')}",
             f"탐색기 {ui('output')} 폴더의 <b>월간보고_2026-09.html</b> 더블클릭"],
-           extra=prompt(P_REPORT),
            ok="크롬에 보고서가 열리고 불량률이 <b>1호기 2.7% · 2호기 3.7% · 3호기 1.9% · 전체 2.8%</b>로 나옵니다.",
            stuck="‘pandas(또는 openpyxl)가 없다’고 하면 2-19처럼 설치 명령을 읽고 허락합니다. 숫자가 다르면 “합계 불량량 ÷ 합계 생산량으로 다시 계산해줘”라고 보내세요.",
            figure=figs(
@@ -262,29 +288,30 @@ def ext_page():
                fig("m5-05b", "output 폴더에 생긴 보고서", explorer(PROJ + "\\output", [("🌐", "월간보고_2026-09.html", "Chrome HTML Document")],
                                                          marks={"월간보고_2026-09.html": 3})))),
         st("5-6", "마음에 들 때까지 고치기", "한 번에 하나씩 고쳐 ‘이대로 매달 받고 싶은’ 보고서로 만듭니다.",
-           ["첫 번째 요청(요약 3줄) 보내기 → 크롬 새로고침", "두 번째(막대 색)·세 번째(배경) 요청을 하나씩 보내기 → 크롬 새로고침", "네 번째 요청(대조 숫자) 보내기",
-            "data 폴더의 mes_sample.xlsx를 엑셀로 열어 숫자 3개를 직접 확인",
-            f"마음에 들면 아래 저장 요청문 보내기 → 권한 창 {ui('1. Yes')} (세이브 카메라 — 2-20에서 한 것)"],
-           extra=prompt(P_FIX1) + prompt(P_FIX2) + prompt(P_FIX2B) + prompt(P_FIX3)
-           + box("warn", "원본과 대조", "행 수 <b>66</b> · 전체 생산량 <b>219,750m</b> · 전체 불량량 <b>6,135m</b>. 엑셀에서 D열·E열을 선택하면 오른쪽 아래에 합계가 보입니다.")
-           + prompt(P_SAVE0)
-           + box("info", "왜 지금 저장하나요?", "이제 이 보고서를 바탕으로 스킬을 만들고 고칩니다. 스킬을 고치다 결과가 이상해져도 <b>“마지막 저장 상태로 되돌려줘”</b> 한마디로 이 시점에 돌아올 수 있게, 마음에 든 지금 사진을 찍어 둡니다. "
+           ["첫 번째 요청(요약 3줄) 보내기 → 크롬 새로고침" + prompt(P_FIX1),
+            "두 번째(막대 색)·세 번째(배경) 요청을 하나씩 보내기 → 크롬 새로고침" + prompt(P_FIX2) + prompt(P_FIX2B),
+            "네 번째 요청(대조 숫자) 보내기" + prompt(P_FIX3),
+            "data 폴더의 mes_sample.xlsx를 엑셀로 열어 숫자 3개를 직접 확인"
+            + box("warn", "원본과 대조", "행 수 <b>66</b> · 전체 생산량 <b>219,750m</b> · 전체 불량량 <b>6,135m</b>. 엑셀에서 D열·E열을 선택하면 오른쪽 아래에 합계가 보입니다."),
+            f"마음에 들면 아래 저장 요청문 보내기 → 권한 창 {ui('1. Yes')} (세이브 카메라 — 2-20에서 한 것)" + prompt(P_SAVE0)],
+           extra=box("info", "왜 지금 저장하나요?", "이제 이 보고서를 바탕으로 스킬을 만들고 고칩니다. 스킬을 고치다 결과가 이상해져도 <b>“마지막 저장 상태로 되돌려줘”</b> 한마디로 이 시점에 돌아올 수 있게, 마음에 든 지금 사진을 찍어 둡니다. "
                  "gj-report는 새 폴더라 저장 시작(git init)부터 다시 합니다."),
            ok="요약 3줄이 있고, 2호기 막대만 주황색이며, 대조 숫자 3개가 엑셀과 같습니다. 이 모양을 ‘9월 보고서’로 저장했으면 통과입니다.",
            stuck="마음에 안 드는 곳이 더 있으면 저장하기 전에 지금 더 고치세요. 스킬은 ‘지금 이 모양’을 그대로 기억합니다. ‘이름·이메일 설정이 필요하다’고 하면 2-20처럼 “이름은 [금대리], 이메일은 [회사 메일]로 이 폴더에만 설정해줘”라고 보내세요.",
            figure=fig("m5-06", "고친 뒤의 9월 보고서(예시)", browser("file:///C:/Users/금대리/Desktop/gj-report/output/월간보고_2026-09.html",
                                                           report_mock(9, SEP_VALUES, "2호기", SEP_LINES), tab="월간 생산 보고"))),
         st("5-7", "스킬 파일로 만들기", "방금의 작업 방법을 CLI 창에서 말 한 번으로 스킬 파일(SKILL.md)로 저장합니다.",
-           ["Claude Code 입력칸에 아래 요청문을 붙여넣고 Enter",
+           ["Claude Code 입력칸에 아래 요청문을 붙여넣고 Enter" + prompt(P_SKILL)
+            + box("ok", "🌱 쉬운 길 — 용어를 몰라도 됩니다", "위 요청문이 어렵게 느껴지면 아래처럼 <b>‘마음에 드니 스킬로 만들어줘’</b>라고만 해도 됩니다. 클로가 위치·설명·입력 자리를 알아서 정하고 무엇을 적었는지 알려 줍니다. "
+                  "실제 업무에서도 이 순서가 가장 자연스럽습니다. 일단 대화로 일을 끝내고, 결과가 마음에 들 때 스킬로 만들어 달라고 합니다.")
+            + prompt(P_SKILL_EASY),
             f"권한 창의 파일 위치가 <code>.claude\\skills\\monthly-report\\SKILL.md</code>인지 확인 → {ui('1. Yes')}",
             "<code>/reload-skills</code> 입력 → Enter (새로 생긴 스킬 폴더를 읽게 함)",
             "입력칸에 <code>/mon</code>까지만 쳐서 목록에 <b>/monthly-report</b>가 보이는지 확인",
-            f"아래 저장 요청문 보내기 → 권한 창 {ui('1. Yes')}"],
-           extra=prompt(P_SKILL)
-           + box("info", "낯선 단어 두 개", "<b>description</b>은 ‘이 스킬을 언제 쓰는지’ 적는 설명 칸이고, <b>$ARGUMENTS</b>는 <code>/스킬이름</code> 뒤에 적은 말(파일 이름)이 들어오는 자리입니다. 5-8에서 파일을 열어 직접 봅니다.")
+            f"아래 저장 요청문 보내기 → 권한 창 {ui('1. Yes')}" + prompt(P_SAVE_SKILL)],
+           extra=box("info", "낯선 단어 두 개", "<b>description</b>은 ‘이 스킬을 언제 쓰는지’ 적는 설명 칸이고, <b>$ARGUMENTS</b>는 <code>/스킬이름</code> 뒤에 적은 말(파일 이름)이 들어오는 자리입니다. 5-8에서 파일을 열어 직접 봅니다.")
            + box("info", "왜 /reload-skills 인가요?", "스킬 파일을 고치는 것은 바로 반영됩니다. 다만 Claude Code를 켤 때 <code>.claude\\skills</code> 폴더가 아예 없었다면 한 번 다시 읽게 해야 합니다. "
-                 "목록에 안 보이면 <code>/exit</code> 후 <code>claude</code>를 다시 실행해도 됩니다.")
-           + prompt(P_SAVE_SKILL),
+                 "목록에 안 보이면 <code>/exit</code> 후 <code>claude</code>를 다시 실행해도 됩니다."),
            ok="탐색기 gj-report\\.claude\\skills\\monthly-report 폴더에 <b>SKILL.md</b>가 있고, <code>/mon</code>을 치면 <b>/monthly-report</b>가 목록에 뜹니다. ‘월간보고 스킬’로 저장했습니다.",
            stuck="파일이 다른 위치(예: 폴더 맨 위)에 만들어졌다면 “.claude/skills/monthly-report/SKILL.md 로 옮겨줘”라고 보내세요. 폴더 이름은 영문 소문자와 -만 씁니다.",
            figure=figs(
@@ -293,12 +320,12 @@ def ext_page():
                                                                    detail=".claude\\skills\\monthly-report\\SKILL.md"))),
                fig("m5-07b", "/mon 까지 치면 스킬이 목록에", cc(cc_user("/reload-skills", n=3) + cc_input("/mon", n=4, hint="/monthly-report   data 폴더의 생산실적 엑셀로 호기별 불량률 월간 보고서(HTML)를 만든다…"))))),
         st("5-8", "스킬 파일 열어 읽기", "스킬이 마법이 아니라 ‘글로 쓴 작업표준서’라는 것을 눈으로 확인합니다.",
-           ["PowerShell 창을 하나 더 열고 아래 명령을 붙여넣기(메모장이 열림)",
+           ["PowerShell 창을 하나 더 열고 아래 명령을 붙여넣기(메모장이 열림)"
+            + code_block("스킬 파일 열기", text="cd Desktop\\gj-report\nnotepad .claude\\skills\\monthly-report\\SKILL.md\n", cid="c-np"),
             "맨 위 <code>---</code> 사이의 <b>name</b>과 <b>description</b> 찾기",
             "그 아래 본문에서 계산식과 저장 위치가 적힌 줄 찾기",
             "아래 ‘정답 예시’와 비교하고 메모장 닫기(저장하지 않음)"],
-           extra=code_block("스킬 파일 열기", text="cd Desktop\\gj-report\nnotepad .claude\\skills\\monthly-report\\SKILL.md\n", cid="c-np")
-           + table(["부분", "뜻", "잘 쓰는 법"], [
+           extra=table(["부분", "뜻", "잘 쓰는 법"], [
                ["name", "스킬 이름. /이름 으로 부름", "영문 소문자와 -"],
                ["description", "언제 쓰는 스킬인지. 클로가 이 글을 보고 스스로 꺼내 쓰기도 함", "“~라고 할 때 사용한다”처럼 상황을 적기"],
                ["$ARGUMENTS", "/이름 뒤에 적은 말이 들어오는 자리", "파일 이름처럼 매번 바뀌는 것"],
@@ -310,10 +337,9 @@ def ext_page():
            figure=fig("m5-08", "메모장으로 연 SKILL.md", notepad(
                mk(SKILL_FM, 2, block=True) + SKILL_NP.replace("3. 호기별 불량률 = 불량량 합계 ÷ 생산량 합계 × 100 …", mk("3. 호기별 불량률 = 불량량 합계 ÷ 생산량 합계 × 100 …", 3))))),
         st("5-9", "스킬로 실행하기 — 10월 데이터", "설명 없이 명령 한 줄로 10월 보고서를 만듭니다.",
-           ["Claude Code 창에서 <code>/clear</code>로 대화 비우기(설명 없이 스킬만으로 되는지 보려고)", "아래 한 줄을 붙여넣고 Enter",
+           ["Claude Code 창에서 <code>/clear</code>로 대화 비우기(설명 없이 스킬만으로 되는지 보려고)", "아래 한 줄을 붙여넣고 Enter" + prompt(P_RUN),
             f"권한 창이 나오면 내용을 읽고 {ui('1. Yes')}", f"{ui('output')} 폴더의 <b>월간보고_2026-10.html</b> 더블클릭"],
-           extra=prompt(P_RUN)
-           + box("ok", "말로 불러도 됩니다", "“10월 월간 보고서 만들어줘”처럼 말하면 클로가 description을 보고 이 스킬을 스스로 꺼내 씁니다. 확실하게 하려면 <code>/monthly-report 파일이름</code>이 가장 정확합니다."),
+           extra=box("ok", "말로 불러도 됩니다", "“10월 월간 보고서 만들어줘”처럼 말하면 클로가 description을 보고 이 스킬을 스스로 꺼내 씁니다. 확실하게 하려면 <code>/monthly-report 파일이름</code>이 가장 정확합니다."),
            ok="9월과 <b>같은 모양</b>의 보고서가 나오고, 숫자는 <b>1호기 2.1% · 2호기 3.1% · 3호기 4.1% · 전체 3.1%</b>입니다. 이번에는 <b>3호기</b> 막대가 주황색입니다. 대조 숫자는 60행 · 188,600m · 5,856m.",
            stuck="‘알 수 없는 명령’이라고 하면 <code>/reload-skills</code> 후 다시 하거나, <code>/exit</code> → <code>claude</code>로 다시 들어옵니다. 모양이 9월과 다르면 5-8로 돌아가 스킬에 빠진 규칙을 추가합니다.",
            figure=figs(
@@ -322,10 +348,9 @@ def ext_page():
                fig("m5-09b", "10월 보고서 — 같은 모양, 다른 결과", browser("file:///C:/Users/금대리/Desktop/gj-report/output/월간보고_2026-10.html",
                                                               report_mock(10, OCT_VALUES, "3호기", OCT_LINES), tab="월간 생산 보고")))),
         st("5-10", "스킬 다듬기와 보관 위치", "스킬도 말로 고칠 수 있고, 어디에 두느냐에 따라 쓰이는 범위가 달라진다는 것을 압니다.",
-           ["아래 요청문의 [ ]를 내 부서·이름으로 고쳐 보내기 → 권한 창 1. Yes", "<code>/monthly-report mes_sample_oct.xlsx</code> 다시 실행(덮어쓸지 물으면 ‘응’)",
-            "크롬 새로고침 → 맨 아래 작성자 줄 확인", "잘 나왔으면 저장 요청문 보내기 → 권한 창 1. Yes", "아래 표에서 프로젝트 스킬과 개인 스킬의 차이 읽기"],
-           extra=prompt(P_TUNE) + prompt(P_SAVE_TUNE)
-           + table(["종류", "두는 곳", "쓰이는 범위", "이럴 때"], [
+           ["아래 요청문의 [ ]를 내 부서·이름으로 고쳐 보내기 → 권한 창 1. Yes" + prompt(P_TUNE), "<code>/monthly-report mes_sample_oct.xlsx</code> 다시 실행(덮어쓸지 물으면 ‘응’)",
+            "크롬 새로고침 → 맨 아래 작성자 줄 확인", "잘 나왔으면 저장 요청문 보내기 → 권한 창 1. Yes" + prompt(P_SAVE_TUNE), "아래 표에서 프로젝트 스킬과 개인 스킬의 차이 읽기"],
+           extra=table(["종류", "두는 곳", "쓰이는 범위", "이럴 때"], [
                ["프로젝트 스킬", "프로젝트폴더\\.claude\\skills\\이름\\SKILL.md", "이 폴더에서만. 폴더를 공유하면 동료도 같이 씀", "이 업무 전용 방법(오늘 만든 것)"],
                ["개인 스킬", "C:\\Users\\내이름\\.claude\\skills\\이름\\SKILL.md", "내 PC의 모든 폴더", "어디서나 쓰는 내 습관(예: 회의록 5줄 요약)"]])
            + box("info", "동료에게 나누기", "<code>monthly-report</code> 폴더를 통째로 복사해 동료의 <code>.claude\\skills\\</code>에 넣으면 됩니다. 스킬 파일에 개인정보·기밀 숫자를 적지 않았는지 먼저 확인하세요."),
@@ -335,6 +360,10 @@ def ext_page():
                                                     + cc_tool("Update(.claude\\skills\\monthly-report\\SKILL.md) — 1줄 추가")
                                                     + cc_user(P_RUN, n=2) + cc_ai("같은 이름의 파일이 있습니다. 덮어쓸까요?")))),
 
+        # ── 3교시부터(MCP)는 강사 승인코드로 연다 ──
+        gate("m5mcp", "MCP 실습(3교시·4교시·심화)은 강사가 열어 줍니다",
+             "강사가 알려 주는 <b>승인코드</b>를 넣으면 5-11 ~ 5-22가 열립니다. 그 전까지는 스킬(5-1 ~ 5-10)까지 진행합니다.",
+             "".join([
         # ── 3교시 ──
         section("3교시 · MCP 개념과 노션 연결", "약 45분"),
         st("5-11", "MCP가 무엇인지 이해하기", "클로가 내 폴더 밖의 도구(노션)를 쓰려면 무엇이 필요한지 압니다.",
@@ -361,9 +390,13 @@ def ext_page():
                nt_page("금진 AI 실습", mk("<p>이 페이지는 Claude Code MCP 실습용입니다.</p>", 4, block=True), icon="📄", title_mark=3),
                crumbs=("금진 AI 실습",), on="📄 금진 AI 실습", side_marks={"＋개인 페이지": 2}))),
         st("5-13", "노션 MCP 추가하기", "명령 한 줄로 노션으로 가는 통로를 등록합니다.",
-           ["Claude Code 창에서 <code>/exit</code>로 나오기(PowerShell은 gj-report 폴더 그대로)", "아래 명령을 복사해 붙여넣고 Enter", "<code>claude mcp list</code> 입력"],
-           extra=code_block("노션 MCP 추가", text=MCP_ADD, cid="c-mcp") + code_block("등록 확인", text="claude mcp list\n", cid="c-mcplist")
-           + box("info", "명령 읽는 법", "<code>claude mcp add</code>(통로 추가) · <code>--transport http</code>(인터넷 주소로 연결) · <code>notion</code>(내가 붙인 이름) · 마지막은 노션이 공식으로 제공하는 MCP 주소입니다. "
+           ["Claude Code 창에서 <code>/exit</code>로 나오기(PowerShell은 gj-report 폴더 그대로)",
+            "아래 명령을 복사해 붙여넣고 Enter" + code_block("노션 MCP 추가", text=MCP_ADD, cid="c-mcp")
+            + box("ok", "🌱 쉬운 길 — 명령 대신 말로", "1번에서 나오지 말고 Claude Code 입력칸에 아래처럼 부탁해도 됩니다. 클로가 등록 명령을 실행하거나 설정 파일(<code>.mcp.json</code>)을 만들겠다고 권한 창을 띄우면, 읽고 <b>1. Yes</b>를 고릅니다. "
+                  "그다음 <code>/exit</code> 후 <code>claude</code>를 다시 실행합니다. 설정 파일 방식이었다면 시작할 때 ‘이 폴더의 MCP 서버(notion)를 쓸까요?’라고 한 번 더 물으니 허용합니다. 노션 로그인 허용(5-14)은 어느 쪽이든 직접 합니다.")
+            + prompt(P_MCP_EASY),
+            "<code>claude mcp list</code> 입력" + code_block("등록 확인", text="claude mcp list\n", cid="c-mcplist")],
+           extra=box("info", "명령 읽는 법", "<code>claude mcp add</code>(통로 추가) · <code>--transport http</code>(인터넷 주소로 연결) · <code>notion</code>(내가 붙인 이름) · 마지막은 노션이 공식으로 제공하는 MCP 주소입니다. "
                  "기본 설정에서는 <b>이 명령을 실행한 폴더(gj-report)에서만</b> 연결됩니다."),
            ok="<code>claude mcp list</code>에 <b>notion</b> 줄이 보이고 끝에 <b>Needs authentication</b>(인증 필요)이라고 나옵니다. 아직 로그인 전이라 정상입니다.",
            stuck="‘Failed to connect’가 나오면 회사 네트워크가 mcp.notion.com을 막은 경우입니다. 강사에게 알려 주세요. 주소를 잘못 넣었다면 <code>claude mcp remove notion</code> 후 다시 추가합니다.",
@@ -387,18 +420,17 @@ def ext_page():
         section("4교시 · 노션 실습과 스킬·MCP 합치기", "약 40분 · 읽기 → 쓰기 → 고치기 순서"),
         box("info", "안전한 순서", "바깥 도구는 항상 <b>읽기 → 내용 확인 → 쓰기</b> 순서로 합니다. 쓰기 전에 “넣을 내용을 먼저 보여줘”를 습관으로 만드세요."),
         st("5-15", "읽기 — 노션 페이지 찾아 읽기", "클로가 노션에 실제로 닿는지 가장 안전한 ‘읽기’로 확인합니다.",
-           ["아래 요청문을 붙여넣고 Enter", "권한 창에 <b>notion</b> 도구 이름이 보이는지 읽기", f"{ui('1. Yes')} 선택"],
-           extra=prompt(P_READ)
-           + box("info", "권한 창이 달라졌습니다", "이번에는 파일이 아니라 <b>노션 도구</b>(예: notion-search)를 써도 되는지 묻습니다. 무엇을 하려는지 읽고 허락하는 것은 똑같습니다."),
+           ["아래 요청문을 붙여넣고 Enter" + prompt(P_READ), "권한 창에 <b>notion</b> 도구 이름이 보이는지 읽기", f"{ui('1. Yes')} 선택"],
+           extra=box("info", "권한 창이 달라졌습니다", "이번에는 파일이 아니라 <b>노션 도구</b>(예: notion-search)를 써도 되는지 묻습니다. 무엇을 하려는지 읽고 허락하는 것은 똑같습니다."),
            ok="클로가 <b>“이 페이지는 Claude Code MCP 실습용입니다.”</b>라고 내가 쓴 문장을 그대로 알려 줍니다.",
            stuck="페이지를 못 찾으면 5-14에서 다른 워크스페이스를 골랐을 수 있습니다. <code>/mcp</code> → notion에서 다시 인증(Re-authenticate)하고 워크스페이스를 확인하세요.",
            figure=fig("m5-15", "노션 도구 사용 허락", cc(cc_user(P_READ, n=1)
                                                  + cc_perm("Do you want to use this tool?", ["Yes", "Yes, and don't ask again for this tool", "No"], n=3,
                                                            detail="notion - notion-search (MCP)  query: \"금진 AI 실습\"")))),
         st("5-16", "쓰기 — 10월 보고를 노션 페이지로", "보고서 요약을 노션 하위 페이지로 올립니다. 올리기 전에 내용을 먼저 봅니다.",
-           ["아래 요청문을 붙여넣고 Enter", "클로가 보여 준 ‘넣을 내용’에서 숫자 확인(3호기 4.1%)", f"“좋아, 만들어줘” 보내기 → 권한 창 {ui('1. Yes')}",
+           ["아래 요청문을 붙여넣고 Enter" + prompt(P_WRITE), "클로가 보여 준 ‘넣을 내용’에서 숫자 확인(3호기 4.1%)",
+            f"“좋아, 만들어줘” 보내기 → 권한 창 {ui('1. Yes')}" + prompt("좋아, 만들어줘."),
             "크롬의 노션에서 ‘금진 AI 실습’ 아래 새 페이지 열어 보기"],
-           extra=prompt(P_WRITE) + prompt("좋아, 만들어줘."),
            ok="노션 ‘금진 AI 실습’ 아래에 <b>2026년 10월 생산 보고</b> 페이지가 생기고, 요약 3줄과 표(전체 188,600m · 5,856m · 3.1%)가 들어 있습니다.",
            stuck="노션 화면에 안 보이면 새로고침(F5)하세요. 표 대신 글머리 목록으로 들어갔다면 “표로 바꿔줘”라고 보내면 됩니다.",
            figure=figs(
@@ -409,19 +441,20 @@ def ext_page():
                    nt_page("2026년 10월 생산 보고", "<p>① 전체 188,600m 생산, 불량률 3.1%</p><p>② 불량률 최고: 3호기 4.1%</p><p>③ 3호기 오븐 온도 확인 필요</p>" + OCT_TABLE, icon="📄"),
                    crumbs=("금진 AI 실습", "2026년 10월 생산 보고"), on="📄 2026년 10월 생…", sub="📄 2026년 10월 생…", min_h=300)))),
         st("5-17", "데이터베이스 만들고 고치기", "노션 데이터베이스(표)를 말로 만들고, 한 건의 상태를 말로 바꿉니다. 노션에서는 표의 열을 ‘속성’이라고 부릅니다.",
-           ["첫 번째 요청문 보내기 → 권한 창 1. Yes", "노션에서 ‘불량 조치 목록’에 3건이 들어왔는지 확인", "두 번째 요청문 보내기 → 권한 창 1. Yes",
+           ["첫 번째 요청문 보내기 → 권한 창 1. Yes" + prompt(P_DB), "노션에서 ‘불량 조치 목록’에 3건이 들어왔는지 확인",
+            "두 번째 요청문 보내기 → 권한 창 1. Yes" + prompt(P_DB2),
             "노션에서 첫 줄의 상태가 ‘진행 중’으로 바뀌었는지 확인"],
-           extra=prompt(P_DB) + prompt(P_DB2),
            ok="‘불량 조치 목록’에 <b>3건</b>이 있고, ‘3호기 오븐 온도 센서 점검’의 상태가 <b>진행 중</b>입니다. 노션을 한 번도 클릭하지 않고 만들고 고쳤습니다.",
            stuck="데이터베이스를 만들 수 없다고 하면 “같은 내용을 ‘금진 AI 실습’ 페이지에 표로 넣어줘”로 바꿔 진행하세요. 속성 이름이 조금 다르게 만들어져도 3건과 상태 변경만 맞으면 통과입니다.",
            figure=fig("m5-17", "노션 — 불량 조치 목록(상태 변경 후)", notion(
                '<div style="padding:0 12px">' + nt_db(DB_COLS, DB_ROWS, name="불량 조치 목록", widths=[142, 50, 70, 98], plus_col=False, new_btn=False) + "</div>",
                crumbs=("금진 AI 실습", "불량 조치 목록"), on="🗂 불량 조치 목록", sub="🗂 불량 조치 목록", min_h=260))),
         st("5-18", "스킬 + MCP 합치기 — 만들고 올리기까지 한 번에", "스킬(방법)에 MCP(연결)를 넣어, 보고서 작성부터 노션 등록까지 명령 한 줄로 끝냅니다.",
-           ["아래 요청문으로 스킬에 마지막 단계 추가 → 권한 창 1. Yes", "<code>/monthly-report mes_sample.xlsx</code> 실행(9월 파일 덮어쓰기는 ‘응’)",
-            "“노션에 올릴까요?”라고 물으면 ‘응’ → 권한 창 1. Yes", "노션에서 <b>2026년 9월 생산 보고</b> 페이지 확인", "잘 됐으면 저장 요청문 보내기 → 권한 창 1. Yes"],
-           extra=prompt(P_COMBO) + prompt("/monthly-report mes_sample.xlsx") + prompt(P_SAVE_COMBO)
-           + box("ok", "오늘의 완성형", "<b>CLAUDE.md</b>(규칙) + <b>스킬</b>(방법) + <b>MCP</b>(연결). 다음 달에는 data 폴더에 새 엑셀을 넣고 <code>/monthly-report 파일이름</code> 한 줄이면 됩니다."),
+           ["아래 요청문으로 스킬에 마지막 단계 추가 → 권한 창 1. Yes" + prompt(P_COMBO),
+            "<code>/monthly-report mes_sample.xlsx</code> 실행(9월 파일 덮어쓰기는 ‘응’)" + prompt("/monthly-report mes_sample.xlsx"),
+            "“노션에 올릴까요?”라고 물으면 ‘응’ → 권한 창 1. Yes", "노션에서 <b>2026년 9월 생산 보고</b> 페이지 확인",
+            "잘 됐으면 저장 요청문 보내기 → 권한 창 1. Yes" + prompt(P_SAVE_COMBO)],
+           extra=box("ok", "오늘의 완성형", "<b>CLAUDE.md</b>(규칙) + <b>스킬</b>(방법) + <b>MCP</b>(연결). 다음 달에는 data 폴더에 새 엑셀을 넣고 <code>/monthly-report 파일이름</code> 한 줄이면 됩니다."),
            ok="노션 ‘금진 AI 실습’ 아래에 <b>2026년 9월 생산 보고</b>가 생기고 표에 <b>2호기 3.7%</b>, 전체 2.8%가 들어 있습니다. ‘노션 올리기 추가’로 저장했습니다.",
            stuck="묻지 않고 바로 올리려 하면 권한 창에서 3. No를 고르고 “올리기 전에 먼저 물어봐”라고 보낸 뒤 스킬에도 그 규칙을 적게 하세요.",
            figure=fig("m5-18", "명령 한 줄 → 보고서 → 노션", cc(cc_user("/monthly-report mes_sample.xlsx", n=2) + cc_tool("Skill(monthly-report) — data/mes_sample.xlsx")
@@ -441,5 +474,56 @@ def ext_page():
                ["다른 폴더에서도 쓰기", "추가할 때 --scope user 를 붙임(익숙해진 뒤)"]])
            + box("no", "연결해도 신호등은 그대로", "노션에 올리는 것도 ‘AI에 넣는 것’과 같습니다. 빨강 자료(급여·인사·단가·원가·원청 자료)는 올리지 않고, 공유 범위가 넓은 페이지에는 노랑 자료도 가린 뒤 올립니다."),
            ok="7개 항목을 확인했고(시간상 건너뛴 단계는 제외), 스킬로 만들 내 업무 1개를 적었습니다.", one=True),
+        # ── 심화(선택) ──
+        section("심화(선택) · MCP를 직접 만들기 — 날씨 사이트와 내 엑셀", "약 60분 · 시간이 남을 때"),
+        box("info", "언제 하나요?", "5-19까지가 본 과정입니다. 여기는 ‘우리 회사가 쓰는 사이트나 도구에도 연결할 수 있을까?’가 궁금한 사람을 위한 선택 실습입니다. "
+            "공식 MCP가 없는 곳도 <b>클로에게 MCP 프로그램을 만들어 달라고</b> 하면 연결할 수 있습니다. 코드는 클로가 쓰고, 우리는 권한 창을 읽고 허락합니다."),
+        st("5-20", "MCP를 직접 만들 수 있는 경우", "연결하고 싶은 사이트·도구가 있을 때 어떤 방법을 써야 하는지 판단합니다.",
+           ["아래 판단표를 위에서부터 읽습니다.", "내 업무에서 연결하고 싶은 사이트나 도구 1개를 떠올려 표의 어느 줄인지 정합니다.", "주의 상자를 읽습니다."],
+           extra=table(["상황", "방법", "예"], [
+               ["그 서비스가 MCP를 공식으로 제공", "연결만 한다(5-13·5-14 방식)", "노션, 구글 드라이브, 슬랙, 깃허브, 피그마"],
+               ["공식 MCP는 없지만 <b>API</b>(프로그램용 출입구)가 있음", "<b>클로에게 MCP를 만들어 달라고 한다</b>(5-21)", "공공 날씨·환율 서비스, 사내 시스템의 API"],
+               ["내 PC 안의 파일·프로그램", "클로에게 MCP를 만들어 달라고 한다(5-22)", "data 폴더의 엑셀 조회"],
+               ["API가 없는 일반 웹사이트", "브라우저를 대신 조작하는 방법뿐. 로그인·약관 문제가 있어 회사 확인 후에", "거래처 포털 화면 긁어 오기"]], raw=True)
+           + box("warn", "직접 만든 MCP도 프로그램입니다", "① 출처를 모르는 MCP 파일을 내려받아 등록하지 않습니다. ② 사이트의 열쇠(API 키)·비밀번호를 요청문이나 파일에 적지 않습니다 — 필요하면 강사·전산 담당에게 묻습니다. "
+                 "③ 회사 시스템에 연결하는 MCP는 전산 담당 확인 후에 만듭니다. ④ 데이터 신호등은 그대로입니다."),
+           ok="내가 떠올린 사이트·도구가 표의 몇 번째 줄인지 말할 수 있으면 통과입니다.", one=True),
+        st("5-21", "날씨 MCP 만들기 — 말로 시켜서", "인터넷 날씨 서비스에 연결하는 MCP를 클로가 만들게 하고, “천안 공장 지금 습도”를 말로 물어봅니다.",
+           ["gj-report 폴더의 Claude Code에서 아래 첫 번째 요청문을 붙여넣고 Enter" + prompt(P_MCP_WEATHER),
+            f"권한 창이 뜰 때마다 무엇을 하려는지 읽고 {ui('1. Yes')} — 부품 설치(<code>pip install …</code>), 파일 만들기(<code>mcp\\…</code>), 등록(<code>claude mcp add weather …</code>), 확인(<code>claude mcp list</code>)",
+            "클로가 ‘Connected(연결됨)’를 확인했다고 하면 <code>/exit</code> → <code>claude --permission-mode default</code>로 다시 실행",
+            f"두 번째 요청문을 보내고, <b>weather</b> 도구 권한 창에서 {ui('1. Yes')}" + prompt(P_ASK_WEATHER)],
+           extra=box("info", "요청문에 꼭 넣은 두 줄", "<b>‘Python으로’</b> — 말하지 않으면 클로가 다른 언어(Node.js)를 골라 설치하지 않은 프로그램을 요구할 수 있습니다. "
+                 "<b>‘설치된 부품 버전에 맞게, 연결됐는지 직접 확인’</b> — MCP 부품(mcp)은 최근 큰 버전(2.x)이 바뀌어, 예전 방식으로 짜면 연결이 안 됩니다. 확인까지 시키면 클로가 스스로 고칩니다."),
+           ok="클로가 <b>천안의 지금 기온(℃)과 습도(%)</b>를 숫자로 답하고, 출처가 Open-Meteo입니다. 날씨는 실시간이라 사람마다 시각에 따라 숫자가 다릅니다.",
+           stuck="‘No module named mcp.server.fastmcp’ 오류가 보이면 “설치된 mcp 버전에 맞게 고쳐줘”라고 보내세요. ‘403’·‘연결하지 못했습니다’가 나오면 회사 네트워크가 날씨 사이트를 막은 것입니다. 강사에게 알려 주세요. "
+                 "급하면 5-22 맨 아래 ‘정답 예시 파일과 직접 등록 명령’을 펼쳐 weather_server.py를 내려받아 gj-report\\mcp 폴더에 넣고, PowerShell(gj-report 폴더)에서 등록 명령을 한 줄씩 실행합니다.",
+           figure=figs(
+               fig("m5-21a", "말로 시키기 → 등록 명령 권한 창", cc(cc_user("날씨를 알려주는 MCP를 만들어서 이 폴더에 연결해줘…", n=1)
+                                                          + cc_tool("Write(mcp\\weather_server.py)")
+                                                          + cc_perm("Bash command", ["Yes", "Yes, and don't ask again for claude mcp commands", "No"], n=2,
+                                                                    detail="claude mcp add weather -- python mcp/weather_server.py")
+                                                          + cc_ai("등록했습니다. claude mcp list 결과: weather - √ Connected", n=3))),
+               fig("m5-21b", "다시 실행 → 말로 묻기", cc(cc_user(P_ASK_WEATHER, n=4) + cc_tool("weather - current_weather (MCP)  천안 36.81, 127.11")
+                                                    + cc_ai("천안 지금 기온 10.0℃, 습도 86%입니다(Open-Meteo, 18:45 기준).\n습도가 높아 건조 시간이 길어질 수 있으니 오븐 구간 온도를 확인하세요."))))),
+        st("5-22", "엑셀 조회 MCP 만들기 — 내 PC 안의 도구", "data 폴더의 생산실적을 조회하는 MCP를 만들고, 날씨와 함께 한 질문으로 써 봅니다.",
+           ["첫 번째 요청문을 보내고 권한 창을 읽으며 1. Yes" + prompt(P_MCP_EXCEL), "‘Connected’를 확인하면 <code>/exit</code> → <code>claude --permission-mode default</code>로 다시 실행",
+            "두 번째 요청문을 보내고 mes 도구 권한 창에서 1. Yes → 답의 숫자를 5-9의 10월 보고서와 비교" + prompt(P_ASK_EXCEL),
+            "세 번째 요청문으로 날씨와 엑셀을 한 번에 써 보기" + prompt(P_ASK_BOTH)],
+           extra=box("info", "스킬로 해도 되는데 왜 MCP인가요?", "스킬은 ‘보고서 만드는 순서’처럼 <b>일하는 방법</b>입니다. MCP는 ‘엑셀에서 불량률을 꺼내 오는 도구’처럼 <b>언제든 꺼내 쓰는 연결</b>입니다. "
+                 "MCP로 만들어 두면 보고서를 만들지 않아도 대화 중에 “3호기 10월 불량률?”처럼 바로 묻고, 날씨 같은 다른 도구와 섞어 쓸 수 있습니다.")
+           + '<details class="qa"><summary>정답 예시 파일과 직접 등록 명령 (급할 때만)</summary>'
+           + code_block("정답 예시 weather_server.py", path=WEATHER_FILE, cid="c-mcp-weather", tall=True, download_href="practice/mcp_example/weather_server.py")
+           + code_block("정답 예시 excel_server.py", path=EXCEL_FILE, cid="c-mcp-excel", tall=True, download_href="practice/mcp_example/excel_server.py")
+           + code_block("직접 등록 명령 (gj-report 폴더의 PowerShell에서, 두 파일을 mcp 폴더에 넣은 뒤)", text=MCP_FALLBACK, cid="c-mcp-fallback")
+           + "</details>"
+           + table(["하고 싶은 것", "방법"], [
+               ["만든 MCP 목록·상태 보기", "claude mcp list"], ["MCP 지우기", "claude mcp remove weather (또는 mes)"],
+               ["고치고 싶을 때", "“weather MCP에 내일 예보도 추가해줘”처럼 말로. 고친 뒤에는 /exit 후 다시 실행"]]),
+           ok="두 번째 요청에 <b>3호기 4.1%</b>(생산량 62,500m 중 불량 2,546m)라고 답합니다. 5-9의 10월 보고서와 같은 숫자입니다. 세 번째 요청에서는 weather와 mes 도구를 둘 다 쓰고 메모를 씁니다.",
+           stuck="숫자가 다르면 “불량률을 호기별 합계끼리 나눠서 다시 계산하게 MCP를 고쳐줘”라고 보내세요. 엑셀 파일을 못 찾으면 data 폴더에 mes_sample_oct.xlsx가 있는지 확인합니다(5-1).",
+           figure=fig("m5-22", "엑셀 조회 MCP — 말로 묻고 정답 대조", cc(cc_user(P_ASK_EXCEL, n=3) + cc_tool("mes - list_files (MCP)") + cc_tool("mes - defect_rate (MCP)  file: mes_sample_oct.xlsx, line: 3")
+                                                                  + cc_ai("10월 3호기 불량률은 4.1%입니다(생산량 62,500m 중 불량 2,546m).\n사용한 도구: mes의 list_files, defect_rate")))),
+        ])),
         '<div class="next-mod">' + box("ok", "모듈 5 완료!", "규칙은 폴더에, 방법은 스킬에, 바깥 도구는 MCP로. 이제 내 업무의 반복 작업을 하나씩 스킬로 옮겨 보세요.") + "</div>",
     ]), pc_note=PC)

@@ -74,7 +74,36 @@ def pills(items, on=None, mark=None):
     return f'<div class="pls">{"".join(out)}</div>'
 
 
-COMMON_CSS = r"""
+# ───────── 강사 승인코드로 여는 가림 상자 ─────────
+# 교육생 화면에서 미리 안 보이게 가리는 용도다. 내용은 페이지 소스와 공개 저장소에 그대로 있으므로 보안 장치가 아니다.
+# 승인코드는 저장소에 적지 않고 SHA-256 값만 둔다. 코드를 바꾸려면 새 코드의 SHA-256 값으로 GATE_HASH를 바꾼다.
+GATE_HASH = "de508568abd9f1a5852cbab879f32b03138c4fdae49756fbf2c16fc0138b8d58"
+
+
+def gate(gid, title, desc, body_html, code_hash=GATE_HASH):
+    """승인코드를 넣어야 열리는 상자. 연 상태는 그 브라우저에만 기억된다(localStorage).
+    닫혀 있는 동안 안의 단계는 진도 계산에서 빠진다(PROGRESS_JS가 .gate.closed 안의 단계를 세지 않음)."""
+    return (f'<div class="gate closed" id="gate-{E(gid)}" data-hash="{E(code_hash)}">'
+            f'<div class="gate-lock"><div class="gate-t">🔒 {E(title)}</div><p>{desc}</p>'
+            '<form class="gate-f"><input type="password" autocomplete="off" placeholder="승인코드" aria-label="승인코드">'
+            '<button type="submit">열기</button><span class="gate-msg"></span></form></div>'
+            f'<div class="gate-body"><div class="gate-open-bar">🔓 강사 승인으로 열린 부분입니다. <button type="button" class="gate-relock">다시 가리기</button></div>{body_html}</div></div>'
+            "<script>(function(){var g=document.getElementById('gate-" + gid + "'),K='gj-gate-" + gid + "';"
+            "try{if(localStorage.getItem(K)===g.dataset.hash)g.classList.remove('closed');}catch(e){}"
+            "var f=g.querySelector('.gate-f'),m=g.querySelector('.gate-msg');"
+            "f.onsubmit=function(ev){ev.preventDefault();var v=f.querySelector('input').value.trim();"
+            "if(!window.crypto||!crypto.subtle){m.textContent='이 브라우저에서는 열 수 없습니다. 크롬으로 열어 주세요.';return;}"
+            "crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)).then(function(b){"
+            "var h=Array.prototype.map.call(new Uint8Array(b),function(x){return('0'+x.toString(16)).slice(-2);}).join('');"
+            "if(h===g.dataset.hash){try{localStorage.setItem(K,h);}catch(e){}location.reload();}"
+            "else{m.textContent='승인코드가 맞지 않습니다.';}});};"
+            "g.querySelector('.gate-relock').onclick=function(){try{localStorage.removeItem(K);}catch(e){}location.reload();};"
+            "})();</script>")
+
+
+COMMON_CSS = r""".prompt{padding-right:72px}ol.do>li>.prompt,ol.do>li>.code,ol.do>li>div{margin-top:8px}
+.gate-lock{border:2px dashed #b9a46a;background:#fbf7ec;border-radius:14px;padding:18px 20px;margin:18px 0;text-align:center}.gate-t{font-weight:900;font-size:18px;color:#1d3a7a}.gate-lock p{color:var(--tx2);margin:8px 0 12px}.gate-f{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center}.gate-f input{border:1px solid #c9c2ad;border-radius:8px;padding:8px 12px;font-size:16px;width:180px}.gate-f button,.gate-relock{border:0;border-radius:8px;padding:8px 16px;background:#1d3a7a;color:#fff;font-weight:700;cursor:pointer}.gate-msg{color:#b3372a;font-size:14px;width:100%}.gate.closed .gate-body{display:none}.gate:not(.closed) .gate-lock{display:none}.gate-open-bar{font-size:13.5px;color:var(--tx2);margin:14px 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.gate-relock{padding:4px 10px;font-size:12.5px;background:#8a8f98}
+
 details.teach{border:2px solid #c9a24b;border-radius:14px;background:#fffaf0;padding:10px 14px;margin:14px 0}
 details.teach summary{cursor:pointer;font-weight:900;color:#6b4e00;font-size:15.5px}
 details.teach summary small{font-weight:500;color:#8a7440;margin-left:6px}

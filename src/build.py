@@ -58,7 +58,7 @@ home = hero("㈜금진 · AI 실무 역량 과정", "말로 만드는<br><em>내
         ["모듈 2", "4시간+ (현장 조절)", "PowerShell, Git·Claude Code·Python 설치, 첫 대화, 되돌리기", "노트북(설치 권한), 충전기"],
         ["모듈 3", "4시간", "폴더 틀·규칙 파일(CLAUDE.md), 데이터 읽히기·정제·대시보드·검증, 내 도구 설계서", "모듈 2 완료 PC"],
         ["모듈 4", "4시간", "부서별 트랙 A–E 실습, 검증·공유·시연", "설계서, 마스킹한 부서 데이터(없으면 샘플 데이터)"],
-        ["모듈 5", "약 3시간 30분", "새 프로젝트 폴더(복습), 스킬 만들기·실행, MCP 개념과 노션 연결 실습", "모듈 3 완료 PC, 노션 계정(무료 가능)"]])
+        ["모듈 5", "약 3시간 30분 (+ 심화 선택 약 60분)", "새 프로젝트 폴더(복습), 스킬 만들기·실행, MCP 개념과 노션 연결 실습. 심화: 날씨·엑셀 MCP 직접 만들기", "모듈 3 완료 PC, 노션 계정(무료 가능)"]])
     + section("꼭 지킬 원칙 3가지")
     + box("info", "1. 한 번에 하나씩", "AI에게 여러 가지를 한꺼번에 시키지 않습니다. 하나 바꾸고 확인하고 저장합니다.")
     + box("warn", "2. 결과는 원본과 대조", "AI도 틀릴 수 있습니다. 숫자는 원본 엑셀에서 3개 이상 직접 확인합니다.")
@@ -146,6 +146,7 @@ TERMS = [  # 용어, 뜻, 금진 비유, 단계
     ("GitHub Pages", "GitHub 저장소의 HTML을 인터넷 주소로 보여 주는 무료 기능", "회사 게시판에 완성품 사진 붙이기", "4-6"),
     ("스킬(Skill)", "잘된 작업 방법을 적어 둔 파일(SKILL.md). /이름 으로 다시 실행", "작업표준서", "5-7"),
     ("MCP", "AI 일꾼이 노션 같은 바깥 프로그램과 연결되는 표준 규격", "협력사 출입증과 전용 통로(표준 커넥터)", "5-11"),
+    ("API", "프로그램끼리 정보를 주고받는 출입구. 사이트가 열어 두면 MCP를 직접 만들어 연결할 수 있음", "거래처 전용 납품 창구", "5-20"),
     ("OAuth(허용 로그인)", "비밀번호를 넘기지 않고, 해당 서비스 화면에서 ‘연결 허용’만 해 주는 로그인 방식", "방문증 발급 — 열쇠는 주지 않음", "5-14"),
 ]
 
@@ -301,18 +302,17 @@ m1 = wrap(
          stuck="로그인 메일이 오지 않으면 스팸함을 확인하세요. 회사 보안 정책으로 접속이 막히면 강사에게 알려 주세요.",
          figure=fig("m1-05", "claude.ai 새 대화 화면", claude_web([], marks={"input": 3})))
     + st("1-6", "말 한마디로 첫 웹 페이지", "요청문(프롬프트) 하나로 부서 소개 페이지를 만들고 바로 미리 봅니다.",
-         [f"아래 요청문의 {ui('복사')} → [ ] 부분을 우리 부서에 맞게 고치기", f"입력창에 붙여넣고 {ui('↑')}(보내기)",
+         [f"아래 요청문의 {ui('복사')} → [ ] 부분을 우리 부서에 맞게 고치기" + prompt(P16), f"입력창에 붙여넣고 {ui('↑')}(보내기)",
           "오른쪽에 열린 미리보기 창에서 페이지 확인"],
-         extra=prompt(P16),
          ok="오른쪽 창에 부서 이름과 업무 3가지가 적힌 페이지가 보입니다. 모양은 사람마다 달라도 괜찮습니다.",
          stuck="오른쪽 창이 안 열리고 코드만 보이면 “방금 코드를 미리보기로 보여줘”라고 보내세요.",
          figure=fig("m1-06", "요청 → 오른쪽 미리보기", claude_web(
              [("user", "우리 관리팀 업무를 소개하는 웹 페이지를 HTML 한 파일로 만들어줘…"), ("ai", "부서 소개 페이지를 만들었습니다.")],
              preview_html=dept_v1, marks={0: 2}, preview_marks={"tab": 3}, input_text="")))
     + st("1-7", "대화로 고치기 — 한 번에 하나씩", "수정 요청을 하나씩 보내며 결과가 바뀌는 것을 확인합니다.",
-         ["첫 번째 요청을 보내고 미리보기가 바뀐 것 확인", "두 번째 요청을 보내고 확인", "세 번째 요청을 보내고 버튼 눌러 보기"],
-         extra=prompt("제목 배경색을 금색 계열로 바꿔줘.") + prompt("주요 업무에 '[월간 보고서 작성]'을 하나 더 추가해줘.")
-         + prompt("맨 아래에 '담당자에게 문의' 버튼을 넣어줘. 누르면 '준비 중입니다' 안내가 뜨게 해줘."),
+         ["첫 번째 요청을 보내고 미리보기가 바뀐 것 확인" + prompt("제목 배경색을 금색 계열로 바꿔줘."),
+          "두 번째 요청을 보내고 확인" + prompt("주요 업무에 '[월간 보고서 작성]'을 하나 더 추가해줘."),
+          "세 번째 요청을 보내고 버튼 눌러 보기" + prompt("맨 아래에 '담당자에게 문의' 버튼을 넣어줘. 누르면 '준비 중입니다' 안내가 뜨게 해줘.")],
          ok="제목 색·업무 4개·버튼까지 3번의 수정이 모두 반영됐습니다.",
          stuck="한 번에 여러 개를 보냈더니 엉뚱하게 바뀌었다면 “방금 수정은 취소하고 이전 버전으로 돌려줘”라고 보내세요.",
          figure=fig("m1-07", "수정 3번이 반영된 미리보기", claude_web(
@@ -335,9 +335,8 @@ m1 = wrap(
     # ── 4교시 ──
     + section("4교시 · 데이터 넣어 보기와 웹의 한계", "약 55분")
     + st("1-9", "엑셀을 넣어 차트 만들기", "초록 등급 가상 데이터로 호기별 불량률 차트를 만듭니다.",
-         ['홈 탭 또는 아래 버튼으로 <b>mes_sample.xlsx</b> 내려받기', f"입력창 왼쪽 {ui('＋')} → {ui('파일 또는 사진 추가')}(Add files or photos) → mes_sample.xlsx 선택",
-          f"아래 요청문을 붙여넣고 {ui('↑')}", "미리보기의 차트와 표 확인"],
-         extra='<a class="dl g" href="practice/mes_sample.xlsx" download>📥 mes_sample.xlsx (가상 생산실적 66행)</a>' + prompt(P19),
+         ['홈 탭 또는 아래 버튼으로 <b>mes_sample.xlsx</b> 내려받기' + '<div style="margin-top:8px"><a class="dl g" href="practice/mes_sample.xlsx" download>📥 mes_sample.xlsx (가상 생산실적 66행)</a></div>', f"입력창 왼쪽 {ui('＋')} → {ui('파일 또는 사진 추가')}(Add files or photos) → mes_sample.xlsx 선택",
+          f"아래 요청문을 붙여넣고 {ui('↑')}" + prompt(P19), "미리보기의 차트와 표 확인"],
          ok="불량률이 <b>1호기 2.7% · 2호기 3.7% · 3호기 1.9%</b>로 나옵니다(전체 2.8%). 2호기 막대가 가장 깁니다.",
          stuck="숫자가 조금 다르면 날짜별 평균을 낸 경우입니다. “합계 불량량 ÷ 합계 생산량으로 다시 계산해줘”라고 보내세요. 엑셀이 올라가지 않으면 설정 → 기능에서 ‘코드 실행 및 파일 생성’을 켜거나, 홈 탭의 CSV 파일을 올립니다.",
          figure=fig("m1-09", "파일 첨부 → 요청 → 차트", claude_web(
@@ -359,13 +358,13 @@ m1 = wrap(
          ok="4개 항목을 강사에게 ‘이상 없음’ 또는 ‘문제 있음’으로 알렸습니다.",
          stuck="회사 보안 프로그램이 설치를 막을 수 있습니다. 문제가 있으면 모듈 2 전에 전산 담당에게 요청해 주세요.", one=True)
     + st("1-12", "Claude 데스크톱 앱 설치 (CLI의 짝꿍)", "PC에 Claude 앱을 설치해, 웹 대신 앱으로 쓰고 Claude Code(Code 탭)도 미리 열어 봅니다.",
-         [f"아래 {ui('⬇ Windows용 Claude 앱 내려받기')} 버튼 클릭 → 설치 파일 다운로드가 바로 시작됩니다",
+         [f"아래 {ui('⬇ Windows용 Claude 앱 내려받기')} 버튼 클릭 → 설치 파일 다운로드가 바로 시작됩니다"
+          + '<div style="margin-top:8px"><a class="dl g" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect">⬇ Windows용 Claude 앱 내려받기 (64비트)</a> '
+            '<a class="dl" href="https://claude.com/ko/download" target="_blank" rel="noopener">🌐 공식 다운로드 페이지 열기</a></div>',
           "브라우저 아래(또는 오른쪽 위) 다운로드 목록에서 받은 설치 파일 실행 → 설치가 끝나면 앱이 자동으로 열림",
           "웹(claude.ai)과 같은 계정으로 로그인",
           f"앱 화면에서 {ui('Code')} 탭을 눌러 Claude Code 화면이 열리는지 확인"],
-         extra='<a class="dl g" href="https://claude.ai/api/desktop/win32/x64/setup/latest/redirect">⬇ Windows용 Claude 앱 내려받기 (64비트)</a> '
-               '<a class="dl" href="https://claude.com/ko/download" target="_blank" rel="noopener">🌐 공식 다운로드 페이지 열기</a>'
-         + box("info", "앱과 CLI는 어떤 관계인가요?",
+         extra=box("info", "앱과 CLI는 어떤 관계인가요?",
                "같은 Claude Code를 두 가지 방식으로 씁니다. <b>CLI</b>(모듈 2에서 설치)는 PowerShell에서 글로 쓰고, <b>데스크톱 앱의 Code 탭</b>은 화면을 보며 씁니다. "
                "이 과정은 CLI로 진행하고, 모듈 2에서 CLI 설치가 막히면 앱의 Code 탭이 <b>따라잡기 경로</b>가 됩니다. CLI는 앱이 없어도 따로 설치할 수 있습니다."),
          ok="데스크톱 앱이 열리고 로그인돼 있으며, Code 탭을 누르면 작업 폴더를 고르는 화면이 나옵니다.",
@@ -420,9 +419,8 @@ m2 = wrap(
                      fig("m2-02b", "탐색기 주소창 — 같은 폴더", explorer("C:\\Users\\금대리", [("📁", "Desktop", "파일 폴더"), ("📁", "Documents", "파일 폴더"), ("📁", "Downloads", "파일 폴더")],
                                                                 path_mark=2))))
     + st("2-3", "폴더 이동 연습", "글로 폴더를 오가는 법을 익힙니다.",
-         [f"<code>cd Desktop</code> 입력 → {kbd('Enter')}", f"<code>dir</code> 입력 → {kbd('Enter')} (바탕화면 목록)", f"<code>cd ..</code> 입력 → {kbd('Enter')} (한 칸 위로)",
+         [f"<code>cd Desktop</code> 입력 → {kbd('Enter')}" + code_block("연습 명령", text="cd Desktop\ndir\ncd ..\n", cid="c-cd"), f"<code>dir</code> 입력 → {kbd('Enter')} (바탕화면 목록)", f"<code>cd ..</code> 입력 → {kbd('Enter')} (한 칸 위로)",
           f"<code>cd De</code>까지 치고 {kbd('Tab')} → 자동 완성 확인", f"{kbd('↑')} 키로 이전 명령 불러오기"],
-         extra=code_block("연습 명령", text="cd Desktop\ndir\ncd ..\n", cid="c-cd"),
          ok="<code>cd Desktop</code> 후 맨 아래 줄이 <code>…\\Desktop&gt;</code>로 바뀌고, <code>dir</code>에 바탕화면 파일 목록이 나옵니다.",
          stuck="‘경로를 찾을 수 없습니다’가 나오면 바탕화면이 OneDrive에 있는 PC입니다. <code>cd ([Environment]::GetFolderPath('Desktop'))</code>를 복사해 쓰세요.",
          figure=fig("m2-03", "cd → dir → cd ..", ps_window([
@@ -439,9 +437,9 @@ m2 = wrap(
              html_line(mk('<span class="er">dri : \'dri\' 용어가 cmdlet, 함수, 스크립트 파일 또는 실행할 수 있는 프로그램 이름으로 인식되지 않습니다.</span>', 4)),
              "", ps_prompt(cmd="cls", n=3)])))
     + st("2-5", "작업 폴더 만들기", "앞으로 AI 일꾼이 일할 작업대(폴더)를 만듭니다.",
-         ["<code>cd Desktop</code>으로 바탕화면 이동", "<code>mkdir geumjin-vibe</code> 입력", "파일 탐색기 바탕화면에 같은 폴더가 생겼는지 확인"],
-         extra=code_block("작업 폴더 만들기", text="cd Desktop\nmkdir geumjin-vibe\n", cid="c-mkdir")
-         + box("warn", "폴더 이름 규칙", "작업 폴더 이름은 영문 소문자와 - 만 씁니다. 폴더 이름의 한글·띄어쓰기는 명령을 칠 때 오류가 나기 쉽습니다. 폴더 안의 파일 이름은 한글이어도 됩니다.")
+         ["<code>cd Desktop</code>으로 바탕화면 이동" + code_block("작업 폴더 만들기", text="cd Desktop\nmkdir geumjin-vibe\n", cid="c-mkdir"),
+          "<code>mkdir geumjin-vibe</code> 입력", "파일 탐색기 바탕화면에 같은 폴더가 생겼는지 확인"],
+         extra=box("warn", "폴더 이름 규칙", "작업 폴더 이름은 영문 소문자와 - 만 씁니다. 폴더 이름의 한글·띄어쓰기는 명령을 칠 때 오류가 나기 쉽습니다. 폴더 안의 파일 이름은 한글이어도 됩니다.")
          + box("info", "바탕화면이 OneDrive에 있는 PC", "<code>cd Desktop</code>이 안 되는 PC는 앞으로도 계속 안 됩니다. 이 교안에서 <code>cd Desktop</code>이 나올 때마다 <code>cd ([Environment]::GetFolderPath('Desktop'))</code>로 바꿔 치세요(부록 오류표에도 있습니다)."),
          ok="탐색기 바탕화면에 <b>geumjin-vibe</b> 폴더가 보입니다. 글로 만든 폴더가 클릭 화면에도 똑같이 생겼습니다.",
          figure=figs(fig("m2-05a", "mkdir로 폴더 만들기", ps_window([ps_prompt(path=DESK, cmd="mkdir geumjin-vibe", n=2), "",
@@ -453,9 +451,8 @@ m2 = wrap(
     + section("2교시 · 공구 3종 설치", "약 65분 · 한 줄씩, 성공 화면 확인 후 다음")
     + box("info", "설치 공식", "세 공구 모두 같은 순서입니다 — <b>확인 → 설치 → (PATH 등록) → 다시 확인</b>. 두 번째부터는 순서를 스스로 말해 보세요.")
     + st("2-6", "Git 확인·설치 (세이브 카메라)", "되돌리기 도구 Git을 설치합니다. 2-20과 모듈 3·4의 ‘저장’에 꼭 필요합니다.",
-         ["<code>git --version</code> 입력", "버전이 나오면 2-7로. ‘인식되지 않습니다’가 나오면 git-scm.com에서 Windows용 설치 파일 받기",
+         ["<code>git --version</code> 입력" + code_block("Git 확인", text="git --version\n", cid="c-git"), "버전이 나오면 2-7로. ‘인식되지 않습니다’가 나오면 git-scm.com에서 Windows용 설치 파일 받기",
           f"설치 화면은 바꾸지 말고 {ui('Next')}를 계속 → {ui('Install')} → {ui('Finish')}", "PowerShell을 닫고 다시 열어 1번 다시 실행"],
-         extra=code_block("Git 확인", text="git --version\n", cid="c-git"),
          ok="<code>git version 2.xx.x.windows.1</code>처럼 버전 번호가 나옵니다.",
          stuck="설치 중 선택지가 많아 보여도 전부 기본값이면 됩니다. 이미 깔려 있으면 설치를 건너뜁니다.",
          figure=figs(fig("m2-06a", "git --version", ps_window([ps_prompt(cmd="git --version", n=1), html_line(span("ok", "git version 2.51.0.windows.1")), "", ps_prompt(cursor=True)])),
@@ -464,8 +461,8 @@ m2 = wrap(
                                                                        + checkbox("Windows Explorer integration", True) + checkbox("Git LFS (Large File Support)", True),
                                                                        wbtn("Back") + wbtn("Next", True, 3) + wbtn("Cancel"), side_color="#f05133", logo="◆"))))
     + st("2-7", "Claude Code 설치 (클로 부르기)", "설치 명령 한 줄로 클로를 내 PC에 들입니다.",
-         ["아래 명령 복사", "PowerShell에 붙여넣고 Enter", "설치가 끝날 때까지 기다리기(1~3분)"],
-         extra=code_block("Claude Code 설치", text="irm https://claude.ai/install.ps1 | iex\n", cid="c-install"),
+         ["아래 명령 복사" + code_block("Claude Code 설치", text="irm https://claude.ai/install.ps1 | iex\n", cid="c-install"),
+          "PowerShell에 붙여넣고 Enter", "설치가 끝날 때까지 기다리기(1~3분)"],
          ok="‘설치 완료(successfully installed)’ 문구와 설치 위치(…\\.local\\bin\\claude.exe)가 나옵니다.",
          stuck="빨간 글자로 접속 오류가 나오면 회사 네트워크가 막은 경우입니다. 강사에게 알려 주세요.",
          figure=fig("m2-07", "설치 명령 실행", ps_window([ps_prompt(cmd="irm https://claude.ai/install.ps1 | iex", n=2),
@@ -473,23 +470,20 @@ m2 = wrap(
                                                     html_line(span("ok", "✔ Claude Code successfully installed!")),
                                                     html_line(span("dim", "  Location: C:\\Users\\금대리\\.local\\bin\\claude.exe")), "", ps_prompt(cursor=True)])))
     + st("2-8", "PATH 등록 (배치도에 위치 적기)", "터미널이 claude 프로그램 위치를 찾을 수 있게 등록합니다.",
-         ["아래 3줄을 한꺼번에 복사", "PowerShell에 붙여넣고 Enter", "PowerShell 창을 닫고 새로 열기"],
-         extra=code_block("PATH 등록 3줄", text=PATH3, cid="c-path")
-         + box("info", "왜 하나요?", "설치만으로는 터미널이 새 설비 위치를 모를 때가 있습니다. 배치도에 ‘클로는 여기 있음’이라고 적는 단계입니다."),
+         ["아래 3줄을 한꺼번에 복사" + code_block("PATH 등록 3줄", text=PATH3, cid="c-path"), "PowerShell에 붙여넣고 Enter", "PowerShell 창을 닫고 새로 열기"],
+         extra=box("info", "왜 하나요?", "설치만으로는 터미널이 새 설비 위치를 모를 때가 있습니다. 배치도에 ‘클로는 여기 있음’이라고 적는 단계입니다."),
          ok="아무 메시지 없이 다음 줄로 넘어가면 정상입니다. 창을 다시 열었는지 꼭 확인하세요.",
          figure=fig("m2-08", "PATH 3줄 붙여넣기", ps_window([html_line(mk('<span class="pp">PS C:\\Users\\금대리&gt;</span> $newPath = $env:USERPROFILE + "\\.local\\bin"<br>'
                                                                      '<span class="pp">PS C:\\Users\\금대리&gt;</span> [Environment]::SetEnvironmentVariable("PATH", …)<br>'
                                                                      '<span class="pp">PS C:\\Users\\금대리&gt;</span> $env:Path += ";" + $newPath', 2)), ps_prompt(cursor=True)])))
     + st("2-9", "Claude Code 확인", "클로가 제자리에 있는지 확인합니다.",
-         ["새 PowerShell에서 <code>claude --version</code> 입력"],
-         extra=code_block("확인", text="claude --version\n", cid="c-ccver"),
+         ["새 PowerShell에서 <code>claude --version</code> 입력" + code_block("확인", text="claude --version\n", cid="c-ccver")],
          ok="<code>2.x.x (Claude Code)</code>처럼 버전 번호가 나옵니다.",
          stuck="‘인식되지 않습니다’가 나오면 2-8을 다시 하고 창을 새로 여세요. 그래도 안 되면 부록의 ‘자주 보는 오류’ 표를 보세요.",
          figure=fig("m2-09", "claude --version", ps_window([ps_prompt(cmd="claude --version", n=1), html_line(span("ok", "2.1.x (Claude Code)")), "", ps_prompt(cursor=True)])))
     + st("2-10", "Python 확인 (공구함 열어 보기)", "엑셀 읽는 공구 Python이 있는지 봅니다.",
-         ["<code>python --version</code> 입력", "버전이 나오면 2-12로 건너뜀", "아래처럼 ‘Microsoft Store’ 안내가 나오거나 Store 창이 뜨면 → 창을 닫고 2-11로"],
-         extra=code_block("Python 확인", text="python --version\n", cid="c-py")
-         + box("warn", "가짜 바로가기 주의", "Windows에는 ‘python’이라는 이름의 가짜 바로가기가 들어 있어서, 설치가 안 된 상태로 치면 Store로 안내합니다. Store에서 설치하지 말고 2-11로 가세요."),
+         ["<code>python --version</code> 입력" + code_block("Python 확인", text="python --version\n", cid="c-py"), "버전이 나오면 2-12로 건너뜀", "아래처럼 ‘Microsoft Store’ 안내가 나오거나 Store 창이 뜨면 → 창을 닫고 2-11로"],
+         extra=box("warn", "가짜 바로가기 주의", "Windows에는 ‘python’이라는 이름의 가짜 바로가기가 들어 있어서, 설치가 안 된 상태로 치면 Store로 안내합니다. Store에서 설치하지 말고 2-11로 가세요."),
          ok="버전이 나오거나(설치됨), Store 안내가 나왔습니다(설치 필요). 둘 다 정상 확인입니다.",
          figure=fig("m2-10", "설치 안 된 상태의 안내문", ps_window([ps_prompt(cmd="python --version", n=1),
                                                           html_line(mk('<span class="y">Python was not found; run without arguments to install from the Microsoft Store, or disable this shortcut from Settings &gt; Apps &gt; Advanced app settings &gt; App execution aliases.</span>', 3)),
@@ -509,8 +503,8 @@ m2 = wrap(
              + checkbox("Use admin privileges when installing py.exe", True) + checkbox("Add python.exe to PATH", True, n=3),
              wbtn("Cancel"), side_color="#306998", logo="🐍")))
     + st("2-12", "Python 확인 (공구·배달원)", "Python과 부품 배달원 pip이 준비됐는지 확인합니다.",
-         ["PowerShell을 닫고 새로 열기", "<code>python --version</code>", "<code>pip --version</code>"],
-         extra=code_block("Python·pip 확인", text="python --version\npip --version\n", cid="c-pyver"),
+         ["PowerShell을 닫고 새로 열기", "<code>python --version</code>" + code_block("Python·pip 확인", text="python --version\npip --version\n", cid="c-pyver"),
+          "<code>pip --version</code>"],
          ok="<code>Python 3.13.x</code>와 <code>pip 2x.x from … (python 3.13)</code>이 나옵니다.",
          stuck="여전히 Store 안내가 나오면 PATH 체크가 빠진 것입니다(2-11 막히면 참고). pip만 안 되면 <code>python -m pip --version</code>으로 확인하세요.",
          figure=fig("m2-12", "python · pip 버전", ps_window([ps_prompt(cmd="python --version", n=2), html_line(span("ok", "Python 3.13.x")),
@@ -518,11 +512,11 @@ m2 = wrap(
     # ── 3교시 ──
     + section("3교시 · 로그인과 첫 대화", "약 45분")
     + st("2-13", "첫 실행과 로그인", "작업 폴더에서 클로를 처음 깨우고 내 계정으로 로그인합니다.",
-         ["<code>cd Desktop\\geumjin-vibe</code>로 작업 폴더 이동", f"<code>{MODE}</code> 입력(아래 상자에서 복사)",
+         ["<code>cd Desktop\\geumjin-vibe</code>로 작업 폴더 이동" + code_block("작업 폴더에서 실행", text="cd Desktop\\geumjin-vibe\n" + MODE + "\n", cid="c-run"),
+          f"<code>{MODE}</code> 입력(위 상자에서 복사)",
           f"글자 색 테마는 첫 번째(Dark mode) 그대로 {kbd('Enter')}",
           f"로그인 방식에서 {ui('Claude account with subscription')} 선택 → 열린 브라우저에서 로그인·승인 → 터미널로 돌아와 {kbd('Enter')}"],
-         extra=code_block("작업 폴더에서 실행", text="cd Desktop\\geumjin-vibe\n" + MODE + "\n", cid="c-run")
-         + box("info", "왜 명령이 긴가요?", "최신 Claude Code는 <b>자동(auto) 모드</b>로 시작해, 안전하다고 판단한 일은 묻지 않고 합니다. 이 과정에서는 무엇을 하려는지 읽고 허락하는 연습을 위해 <b>수동 모드</b>로 시작합니다. "
+         extra=box("info", "왜 명령이 긴가요?", "최신 Claude Code는 <b>자동(auto) 모드</b>로 시작해, 안전하다고 판단한 일은 묻지 않고 합니다. 이 과정에서는 무엇을 하려는지 읽고 허락하는 연습을 위해 <b>수동 모드</b>로 시작합니다. "
                "<code>--permission-mode default</code>가 ‘매번 물어봐’라는 뜻입니다."),
          ok="버전·모델 이름·작업 폴더가 적힌 시작 화면과 아래 입력칸(&gt;)이 보입니다. 맨 아래 줄에 <b>⏸ manual mode on</b>이 있으면 수동 모드입니다.",
          stuck="브라우저가 자동으로 안 열리면 <kbd>c</kbd> 키를 눌러 주소를 복사해(또는 터미널에 나온 긴 주소를 직접 복사해) 크롬에 붙여넣으세요. 화면 문구와 로그인 선택지 수는 버전에 따라 조금 다릅니다.",
@@ -543,10 +537,9 @@ m2 = wrap(
                                                                 + cc_perm("Do you want to create index.html?", ["Yes", "Yes, allow all edits during this session", "No, and tell Claude what to do differently"], n=3)
                                                                 + '<div class="cc-hint">⏸ manual mode on (shift+tab to cycle)</div>'))))
     + st("2-15", "첫 질문과 슬래시 명령", "클로에게 말을 걸고 기본 명령을 써 봅니다.",
-         ["입력칸에 아래 질문을 붙여넣고 Enter", "<code>/help</code> 입력 → 도움말 훑어보기", "<code>/model sonnet</code> 입력 → 실습용 주력 모델로 바꾸기",
+         ["입력칸에 아래 질문을 붙여넣고 Enter" + prompt("너는 무엇을 해 줄 수 있어? 초보자용으로 5줄만 설명해줘."), "<code>/help</code> 입력 → 도움말 훑어보기", "<code>/model sonnet</code> 입력 → 실습용 주력 모델로 바꾸기",
           "<code>/clear</code>로 대화를 비운 뒤, 같은 질문을 한 번 더 보내기"],
-         extra=prompt("너는 무엇을 해 줄 수 있어? 초보자용으로 5줄만 설명해줘.")
-         + table(["명령", "뜻"], [["/help", "도움말"], ["/clear", "대화 맥락 정리(새로 시작)"], ["/exit", "Claude Code 종료"], ["/login", "다시 로그인"],
+         extra=table(["명령", "뜻"], [["/help", "도움말"], ["/clear", "대화 맥락 정리(새로 시작)"], ["/exit", "Claude Code 종료"], ["/login", "다시 로그인"],
                                  ["/model", "모델 바꾸기(Opus·Sonnet·Haiku 등)"], ["/usage", "내 요금제 사용량 확인"]])
          + box("info", "모델 고르기와 토큰 아끼기", '설치 직후 기본 모델은 가장 비싼 축인 Opus입니다. 실습은 Sonnet으로 충분해서 <code>/model sonnet</code>으로 바꿔 둡니다. 어떤 일에 어떤 모델이 좋은지는 <a href="#tips" data-go="tips">💡 모델·토큰 꿀팁</a> 탭에 정리했습니다.'),
          ok="클로가 한국어로 5줄 정도 답하고, <code>/clear</code> 뒤에 다시 물어도 답이 나옵니다.",
@@ -564,43 +557,40 @@ m2 = wrap(
     # ── 4교시 ──
     + section("4교시 · CLI로 첫 결과물, 공구 점검, 안전장치", "약 65분")
     + st("2-17", "부서 소개 페이지를 CLI로 다시", "모듈 1과 같은 요청을 CLI로 해서, 파일이 내 폴더에 바로 생기는 것을 봅니다.",
-         ["아래 요청문을 붙여넣고 Enter", "권한 창에서 1. Yes", f"탐색기 geumjin-vibe 폴더에 {ui('index.html')}이 생겼는지 확인",
+         ["아래 요청문을 붙여넣고 Enter" + prompt("우리 [관리팀] 업무를 소개하는 웹 페이지를 index.html 파일로 만들어줘.\n위쪽에 부서 이름과 ㈜금진, 주요 업무 3가지를 목록으로, 남색 계열 디자인."),
+          "권한 창에서 1. Yes", f"탐색기 geumjin-vibe 폴더에 {ui('index.html')}이 생겼는지 확인",
           "index.html 더블클릭으로 크롬에서 열기"],
-         extra=prompt("우리 [관리팀] 업무를 소개하는 웹 페이지를 index.html 파일로 만들어줘.\n위쪽에 부서 이름과 ㈜금진, 주요 업무 3가지를 목록으로, 남색 계열 디자인."),
          ok="다운로드 없이 내 작업 폴더에 index.html이 생기고, 더블클릭하면 페이지가 열립니다.",
          figure=figs(fig("m2-17a", "요청 → 권한 창", cc_window(cc_user("우리 관리팀 업무를 소개하는 웹 페이지를 index.html 파일로 만들어줘…", n=1)
                                                           + cc_perm("Do you want to create index.html?", ["Yes", "Yes, allow all edits during this session", "No"], n=2))),
                      fig("m2-17b", "내 폴더에 바로 생긴 파일", explorer(WORK, [("🌐", "index.html", "Chrome HTML Document")], marks={"index.html": 3})),
                      fig("m2-17c", "크롬에서 열기", browser("file:///C:/Users/금대리/Desktop/geumjin-vibe/index.html", dept_v1, url_mark=4, tab="관리팀 업무 소개"))))
     + st("2-18", "요청문 4종 써 보기", "설명·계획 먼저·작게 수정·오류 붙여넣기 요청을 한 번씩 씁니다.",
-         ["설명 요청 보내기", "계획 먼저 요청 보내기(파일이 바뀌지 않는 것 확인)", "작게 수정 요청 보내기 → 권한 창 1. Yes → 크롬 새로고침", "오류 붙여넣기 틀을 메모해 두기"],
-         extra=prompt("방금 만든 index.html이 어떻게 구성됐는지 초보자용으로 설명해줘.")
-         + prompt("아직 파일은 수정하지 말고, 주요 업무 옆에 아이콘을 넣는 계획만 먼저 알려줘.")
-         + prompt("좋아. 계획대로 하되 가장 작은 수정부터 하고, 무엇이 바뀌었는지 알려줘.")
-         + prompt("아래 오류가 났어. 바로 고치지 말고 원인과 해결 순서를 먼저 설명해줘.\n[오류 메시지 붙여넣기]"),
+         ["설명 요청 보내기" + prompt("방금 만든 index.html이 어떻게 구성됐는지 초보자용으로 설명해줘."),
+          "계획 먼저 요청 보내기(파일이 바뀌지 않는 것 확인)" + prompt("아직 파일은 수정하지 말고, 주요 업무 옆에 아이콘을 넣는 계획만 먼저 알려줘."),
+          "작게 수정 요청 보내기 → 권한 창 1. Yes → 크롬 새로고침" + prompt("좋아. 계획대로 하되 가장 작은 수정부터 하고, 무엇이 바뀌었는지 알려줘."),
+          "오류 붙여넣기 틀을 메모해 두기" + prompt("아래 오류가 났어. 바로 고치지 말고 원인과 해결 순서를 먼저 설명해줘.\n[오류 메시지 붙여넣기]")],
          ok="파일을 바꾸지 않는 요청 2번(설명·계획)과 수정 1번을 해 봤고, 아이콘 수정이 크롬 새로고침 후 페이지에 보입니다.",
          figure=fig("m2-18", "계획 먼저 → 작게 수정", cc_window(cc_user("아직 파일은 수정하지 말고, 아이콘을 넣는 계획만 먼저 알려줘.", n=2)
                                                          + cc_ai("계획: ① 업무 목록 앞에 아이콘 추가 ② 색은 그대로 유지\n바뀔 파일: index.html")
                                                          + cc_user("좋아. 계획대로 하되 가장 작은 수정부터 해줘.", n=3)
                                                          + cc_tool("Update(index.html) — 3줄 수정"))))
     + st("2-19", "공구 점검과 없는 도구 대처", "엑셀을 읽을 부품을 확인하고, 없으면 설치 방법을 물어 허락하는 법을 익힙니다.",
-         ["아래 요청문을 붙여넣고 Enter", "‘필요한 부품(pandas, openpyxl)이 없다’는 답을 읽기",
+         ["아래 요청문을 붙여넣고 Enter" + prompt("엑셀 파일(.xlsx)을 읽을 준비가 됐는지 확인해줘. 필요한 도구가 없으면 무엇이 없는지와 설치 방법을 초보자용으로 알려줘. 설치 명령은 내가 확인하고 허락할게."),
+          "‘필요한 부품(pandas, openpyxl)이 없다’는 답을 읽기",
           f"권한 창에 나온 명령이 <code>pip install pandas openpyxl</code>인지 확인 → {ui('1. Yes')}", "설치 후 ‘준비됐다’는 답 확인"],
-         extra=prompt("엑셀 파일(.xlsx)을 읽을 준비가 됐는지 확인해줘. 필요한 도구가 없으면 무엇이 없는지와 설치 방법을 초보자용으로 알려줘. 설치 명령은 내가 확인하고 허락할게.")
-         + box("info", "앞으로도 이렇게", "낯선 도구가 필요하다는 말이 나오면 겁내지 말고 같은 방식으로 묻습니다: “무엇이 없는지, 설치 방법을 초보자용으로 알려줘.” 명령을 읽고 이상하지 않을 때만 허락합니다."),
+         extra=box("info", "앞으로도 이렇게", "낯선 도구가 필요하다는 말이 나오면 겁내지 말고 같은 방식으로 묻습니다: “무엇이 없는지, 설치 방법을 초보자용으로 알려줘.” 명령을 읽고 이상하지 않을 때만 허락합니다."),
          ok="pandas·openpyxl 설치 후 클로가 ‘엑셀을 읽을 준비가 됐다’고 답합니다.",
          stuck="이미 설치돼 있다는 답이 나오면 그대로 통과입니다. 설치가 네트워크 오류로 실패하면 강사에게 알려 주세요.",
          figure=fig("m2-19", "부품 확인 → 설치 허락", cc_window(cc_user("엑셀 파일(.xlsx)을 읽을 준비가 됐는지 확인해줘…", n=1)
                                                        + cc_ai("pandas, openpyxl이 설치되어 있지 않습니다. 엑셀을 읽으려면 두 부품이 필요합니다.", n=2)
                                                        + cc_perm("Bash command", ["Yes", "Yes, and don't ask again for pip install commands", "No"], n=3, detail="pip install pandas openpyxl"))))
     + st("2-20", "세이브 카메라 — 저장하고 되돌리기", "망가져도 돌아올 수 있다는 것을 직접 확인합니다.",
-         ["저장 시작 요청 보내기 → 권한 창 1. Yes", "일부러 망가뜨리는 수정 요청 → 크롬 새로고침으로 확인",
+         ["저장 시작 요청 보내기 → 권한 창 1. Yes" + prompt("이 폴더를 git으로 저장 시작하고, 지금 상태를 '첫 저장'이라는 이름으로 저장해줘."),
+          "일부러 망가뜨리는 수정 요청 → 크롬 새로고침으로 확인" + prompt("제목 글자를 엄청 크게, 빨간색으로 바꿔줘."),
           "(강사와 함께) 두 번째 PowerShell 창에서 <code>git status</code>, <code>git diff</code>로 바뀐 내용 보기 — 아래 강사 시연 상자",
-          "되돌리기 요청 → 크롬 새로고침으로 원래대로 돌아왔는지 확인"],
-         extra=prompt("이 폴더를 git으로 저장 시작하고, 지금 상태를 '첫 저장'이라는 이름으로 저장해줘.")
-         + prompt("제목 글자를 엄청 크게, 빨간색으로 바꿔줘.")
-         + prompt("방금 바꾼 거 마음에 안 들어. 마지막 저장 상태로 되돌려줘.")
-         + demo("세이브 카메라 속을 들여다보기 (git status · diff · log)",
+          "되돌리기 요청 → 크롬 새로고침으로 원래대로 돌아왔는지 확인" + prompt("방금 바꾼 거 마음에 안 들어. 마지막 저장 상태로 되돌려줘.")],
+         extra=demo("세이브 카메라 속을 들여다보기 (git status · diff · log)",
                 "클로가 뒤에서 한 저장·되돌리기를 명령으로 직접 확인합니다. Claude Code 창은 그대로 두고 <b>PowerShell 창을 하나 더</b> 열어 강사와 같이 칩니다.",
                 [{"do": "새 PowerShell 창을 열고 작업 폴더로 이동합니다.", "cmd": ("c-demo-cd", "cd Desktop\\geumjin-vibe\n"),
                   "see": "맨 아래 줄이 <code>…\\geumjin-vibe&gt;</code>로 바뀝니다."},
@@ -657,7 +647,10 @@ ap = wrap(
         ["스킬 결과 모양이 매번 다름", "스킬 본문에 규칙이 빠짐", "“스킬에 ○○ 규칙을 추가해줘”로 보완(5-10)"],
         ["claude mcp list 에 Needs authentication", "아직 노션 로그인 허용 전", "claude 실행 → /mcp → notion → Authenticate(5-14)"],
         ["claude mcp list 에 Failed to connect", "네트워크가 mcp.notion.com 차단 또는 주소 오타", "강사에게 알리기 · claude mcp remove notion 후 다시 추가"],
-        ["노션 페이지를 못 찾음", "다른 워크스페이스로 허용함", "/mcp → notion → 다시 인증하고 워크스페이스 확인"]])
+        ["노션 페이지를 못 찾음", "다른 워크스페이스로 허용함", "/mcp → notion → 다시 인증하고 워크스페이스 확인"],
+        ["No module named 'mcp.server.fastmcp'", "MCP 부품 2.x에서 이름이 바뀜(FastMCP → MCPServer)", "“설치된 mcp 버전에 맞게 고쳐줘”(5-21)"],
+        ["직접 만든 MCP가 npm·node를 요구함", "요청문에 언어를 안 정해 Node.js로 만듦", "“Python으로 다시 만들어줘”(5-21)"],
+        ["날씨 MCP가 403 또는 ‘연결하지 못했습니다’", "회사 네트워크가 날씨 사이트를 막음", "강사에게 알리기 · 사내망에서 api.open-meteo.com 허용 요청"]])
     + "<h3>되돌리기</h3>"
     + box("info", "클로에게 말로", "“마지막 저장 상태로 되돌려줘” · “저장 기록 보여줘” · “두 번 전 저장으로 돌아가줘”")
     + box("warn", "삭제·배포는 직접 확인", "파일 삭제, git push, 배포는 클로에게 바로 맡기지 말고 무엇이 바뀌는지 먼저 확인합니다.")
@@ -677,10 +670,12 @@ ap = wrap(
         ["1주 전", "노트북 설치 권한·보안 프로그램·사내망(claude.ai, github.com, python.org, pip) 접속 확인", "1-11, 2-6~2-12"],
         ["1주 전", "트랙 배정(기술개발 5명을 B 3명·C 2명으로) 확정. 실데이터 수령일과 마스킹 담당자 지정. 원청 자료를 AI에 넣어도 되는 범위 확인", "3-10, 모듈 4"],
         ["1주 전", "교육생 노션 계정 안내(개인 이메일 무료 가입, 실습용 워크스페이스) · 사내망에서 notion.com, mcp.notion.com 접속 확인", "5-12~5-14"],
+        ["1주 전", "(심화를 할 때) 사내망에서 api.open-meteo.com, geocoding-api.open-meteo.com, pypi.org(pip 설치) 접속 확인", "5-21, 5-22"],
         ["3일 전", "강사 PC에서 모듈 1·2 전 단계 리허설 → 화면 문구가 다르면 교안 수정, 실제 캡처를 shots/에 저장", "전체"],
         ["3일 전", "1-1 라이브 시연용 demo 폴더 + 백업 완성본 준비(가상 MES 데이터)", "1-1"],
         ["3일 전", "강사 PC에서 모듈 3 전 단계와 모듈 4 트랙 A~E 요청문 리허설 — 트랙 카드의 ‘성공하면’ 숫자와 같은지 확인하고 트랙별 완성본을 백업으로 준비", "모듈 3·4"],
         ["3일 전", "강사 PC에서 모듈 5 리허설 — /memory·/mcp 메뉴, 노션 허용 화면, 노션 도구 권한 창 문구를 확인하고 캡처 교체", "5-3, 5-14, 5-15"],
+        ["3일 전", "(심화를 할 때) 강사 Windows PC에서 5-21·5-22 요청문 리허설 — 클로가 만든 MCP가 Connected인지, 3호기 4.1%가 나오는지 확인", "5-21, 5-22"],
         ["3일 전", "(선택) 캐릭터 이미지 11장 준비 — 없으면 이모지 그대로 진행", "캐릭터·용어"],
         ["당일", "포스트잇, 초록·빨강 신호 카드, 보조강사 1명 배치(모듈 2)", "1-1, 모듈 2"],
         ["당일", "사내 공유 폴더 위치 안내(4-6). GitHub Pages 시연용 계정과 샘플 버전 준비", "4-6"]])

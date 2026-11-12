@@ -305,7 +305,7 @@ PROGRESS_JS = r"""
   document.querySelectorAll('.page').forEach(function(page){
     var bar = page.querySelector('.prog');
     if (!bar) return;   // 진도 막대가 있는 탭만 단계 잠금
-    var steps = Array.prototype.slice.call(page.querySelectorAll('section.step'));
+    var steps = Array.prototype.slice.call(page.querySelectorAll('section.step')).filter(function(s){ return !s.closest('.gate.closed'); });   // 승인코드로 가린 단계는 빼고 셈
     var openAll = !!st['__open_' + page.id] || !!navigator.webdriver;   // 자동 점검(브라우저 자동화)에서는 잠금 해제
     steps.forEach(function(s){
       var no = s.id.slice(1);
