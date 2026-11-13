@@ -2,7 +2,7 @@
 실행: python src/make_practice_m34.py .
   practice/mes_raw.xlsx            모듈 3 — 8~10월 MES 추출 '원본'(표기 섞임·중복·음수·빈칸 포함)
   practice/mes_clean.xlsx          모듈 3 정답 정제본 = 트랙 B 재료(따라잡기용)
-  practice/design_template.md      3-10 설계서 4칸 양식
+  practice/design_template.md      3-11 설계서 4칸 양식
   practice/tracks/track_a_orders.xlsx      트랙 A 주문·재고 + 품목–호기
   practice/tracks/track_c_conditions.xlsx  트랙 C 제품코드별 작업조건
   practice/tracks/track_d_sales.xlsx       트랙 D 주문 실적 + 바이어 후보

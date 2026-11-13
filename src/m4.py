@@ -47,7 +47,7 @@ def track(key, title, sub, who, problem, data_html, design_html, first, first_ok
     return (f'<details class="trk" id="trk-{key}"><summary>트랙 {E(title)}<small>{E(sub)}</small></summary><div class="trk-b">'
             + table(["대상", "해결하는 문제"], [[who, problem]])
             + "<h4>4-1 · 데이터</h4>" + data_html
-            + "<h4>3-10 · 설계서 예시</h4>" + design_html
+            + "<h4>3-11 · 설계서 예시</h4>" + design_html
             + f"<h4>4-3 · {first_label} 요청문</h4>" + prompt(first) + f'<div class="okline">{first_ok}</div>'
             + "<h4>4-4 · 기능 요청문 (하나씩, 매번 저장)</h4>" + f_html
             + "<h4>4-5 · 검증할 값 3개</h4>" + answers(check_rows) + extra + "</div></details>")
