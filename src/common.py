@@ -81,14 +81,14 @@ GATE_HASH = "de508568abd9f1a5852cbab879f32b03138c4fdae49756fbf2c16fc0138b8d58"
 
 
 def gate(gid, title, desc, body_html, code_hash=GATE_HASH):
-    """승인코드를 넣어야 열리는 상자. 연 상태는 그 브라우저에만 기억된다(localStorage).
+    """승인코드를 넣어야 열리는 상자. 연 상태는 그 브라우저에만 기억된다(localStorage). 같은 코드(해시)의 상자는 함께 열리고 함께 닫힌다.
     닫혀 있는 동안 안의 단계는 진도 계산에서 빠진다(PROGRESS_JS가 .gate.closed 안의 단계를 세지 않음)."""
     return (f'<div class="gate closed" id="gate-{E(gid)}" data-hash="{E(code_hash)}">'
             f'<div class="gate-lock"><div class="gate-t">🔒 {E(title)}</div><p>{desc}</p>'
             '<form class="gate-f"><input type="password" autocomplete="off" placeholder="승인코드" aria-label="승인코드">'
             '<button type="submit">열기</button><span class="gate-msg"></span></form></div>'
             f'<div class="gate-body"><div class="gate-open-bar">🔓 강사 승인으로 열린 부분입니다. <button type="button" class="gate-relock">다시 가리기</button></div>{body_html}</div></div>'
-            "<script>(function(){var g=document.getElementById('gate-" + gid + "'),K='gj-gate-" + gid + "';"
+            "<script>(function(){var g=document.getElementById('gate-" + gid + "'),K='gj-gate-'+g.dataset.hash.slice(0,12);"
             "try{if(localStorage.getItem(K)===g.dataset.hash)g.classList.remove('closed');}catch(e){}"
             "var f=g.querySelector('.gate-f'),m=g.querySelector('.gate-msg');"
             "f.onsubmit=function(ev){ev.preventDefault();var v=f.querySelector('input').value.trim();"

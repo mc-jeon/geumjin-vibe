@@ -12,6 +12,7 @@ from lessonkit import (E, Page, app_window, box, build, cards, code_block, dropd
 from tips import tips_page
 from common import COMMON_CSS, teach
 from ext import EXT_CSS, ext_page
+from web51 import W51_CSS, web51_page
 from m3 import m3_page
 from m4 import m4_page
 from mocks_notion import NT_CSS
@@ -58,6 +59,7 @@ home = hero("㈜금진 · AI 실무 역량 과정", "말로 만드는<br><em>내
         ["모듈 2", "4시간+ (현장 조절)", "PowerShell, Git·Claude Code·Python 설치, 첫 대화, 되돌리기", "노트북(설치 권한), 충전기"],
         ["모듈 3", "4시간", "폴더 틀·규칙 파일(CLAUDE.md), 데이터 읽히기·정제·대시보드·검증, 내 도구 설계서", "모듈 2 완료 PC"],
         ["모듈 4", "4시간", "부서별 트랙 A–E 실습, 검증·공유·시연", "설계서, 마스킹한 부서 데이터(없으면 샘플 데이터)"],
+        ["모듈 5-1", "약 1시간 30분", "claude.ai 웹·앱에서: 대화로 만든 결과물을 말로 스킬로 만들어 올리고 실행, 커넥터(MCP)로 노션 연결", "Claude 계정(파일 기능 켜기), 노션 계정"],
         ["모듈 5", "약 3시간 30분 (+ 심화 선택 약 60분)", "새 프로젝트 폴더(복습), 스킬 만들기·실행, MCP 개념과 노션 연결 실습. 심화: 날씨·엑셀 MCP 직접 만들기", "모듈 3 완료 PC, 노션 계정(무료 가능)"]])
     + section("꼭 지킬 원칙 3가지")
     + box("info", "1. 한 번에 하나씩", "AI에게 여러 가지를 한꺼번에 시키지 않습니다. 하나 바꾸고 확인하고 저장합니다.")
@@ -147,6 +149,7 @@ TERMS = [  # 용어, 뜻, 금진 비유, 단계
     ("스킬(Skill)", "잘된 작업 방법을 적어 둔 파일(SKILL.md). /이름 으로 다시 실행", "작업표준서", "5-7"),
     ("MCP", "AI 일꾼이 노션 같은 바깥 프로그램과 연결되는 표준 규격", "협력사 출입증과 전용 통로(표준 커넥터)", "5-11"),
     ("API", "프로그램끼리 정보를 주고받는 출입구. 사이트가 열어 두면 MCP를 직접 만들어 연결할 수 있음", "거래처 전용 납품 창구", "5-20"),
+    ("커넥터", "claude.ai 웹·앱에서 MCP 연결을 부르는 이름. 사용자 지정 > 커넥터에서 연결", "웹 창구에 달아 둔 협력사 전용 통로", "웹-6"),
     ("OAuth(허용 로그인)", "비밀번호를 넘기지 않고, 해당 서비스 화면에서 ‘연결 허용’만 해 주는 로그인 방식", "방문증 발급 — 열쇠는 주지 않음", "5-14"),
 ]
 
@@ -648,6 +651,8 @@ ap = wrap(
         ["claude mcp list 에 Needs authentication", "아직 노션 로그인 허용 전", "claude 실행 → /mcp → notion → Authenticate(5-14)"],
         ["claude mcp list 에 Failed to connect", "네트워크가 mcp.notion.com 차단 또는 주소 오타", "강사에게 알리기 · claude mcp remove notion 후 다시 추가"],
         ["노션 페이지를 못 찾음", "다른 워크스페이스로 허용함", "/mcp → notion → 다시 인증하고 워크스페이스 확인"],
+        ["(웹) 스킬 업로드가 안 됨", "ZIP 안에 폴더 없이 파일만 있음 · 폴더 이름과 name이 다름", "monthly-report 폴더째 압축, 또는 정답 예시 ZIP 사용(웹-4)"],
+        ["(웹) 채팅에서 노션을 못 씀", "그 대화에서 커넥터를 안 켬", "입력창 ＋ → 커넥터 → Notion 켜기(웹-8)"],
         ["No module named 'mcp.server.fastmcp'", "MCP 부품 2.x에서 이름이 바뀜(FastMCP → MCPServer)", "“설치된 mcp 버전에 맞게 고쳐줘”(5-21)"],
         ["직접 만든 MCP가 npm·node를 요구함", "요청문에 언어를 안 정해 Node.js로 만듦", "“Python으로 다시 만들어줘”(5-21)"],
         ["날씨 MCP가 403 또는 ‘연결하지 못했습니다’", "회사 네트워크가 날씨 사이트를 막음", "강사에게 알리기 · 사내망에서 api.open-meteo.com 허용 요청"]])
@@ -675,6 +680,7 @@ ap = wrap(
         ["3일 전", "1-1 라이브 시연용 demo 폴더 + 백업 완성본 준비(가상 MES 데이터)", "1-1"],
         ["3일 전", "강사 PC에서 모듈 3 전 단계와 모듈 4 트랙 A~E 요청문 리허설 — 트랙 카드의 ‘성공하면’ 숫자와 같은지 확인하고 트랙별 완성본을 백업으로 준비", "모듈 3·4"],
         ["3일 전", "강사 PC에서 모듈 5 리허설 — /memory·/mcp 메뉴, 노션 허용 화면, 노션 도구 권한 창 문구를 확인하고 캡처 교체", "5-3, 5-14, 5-15"],
+        ["3일 전", "(모듈 5-1을 할 때) claude.ai에서 웹-1~웹-9 리허설 — 설정·사용자 지정 메뉴 이름, 스킬 업로드, 노션 커넥터 허용 화면을 확인하고 캡처 교체", "웹-1~웹-9"],
         ["3일 전", "(심화를 할 때) 강사 Windows PC에서 5-21·5-22 요청문 리허설 — 클로가 만든 MCP가 Connected인지, 3호기 4.1%가 나오는지 확인", "5-21, 5-22"],
         ["3일 전", "(선택) 캐릭터 이미지 11장 준비 — 없으면 이모지 그대로 진행", "캐릭터·용어"],
         ["당일", "포스트잇, 초록·빨강 신호 카드, 보조강사 1명 배치(모듈 2)", "1-1, 모듈 2"],
@@ -683,9 +689,9 @@ ap = wrap(
     + PROGRESS_JS)
 
 pages = [Page("home", "", "홈", home), Page("terms", "★", "캐릭터·용어", glossary), Page("m1", "1", "모듈 1", m1), Page("m2", "2", "모듈 2", m2),
-         Page("m3", "3", "모듈 3", m3_page()), Page("m4", "4", "모듈 4", m4_page()), Page("m5", "5", "모듈 5", ext_page()), Page("tips", "💡", "모델·토큰", tips_page()), Page("ap", "+", "부록", ap)]
+         Page("m3", "3", "모듈 3", m3_page()), Page("m4", "4", "모듈 4", m4_page()), Page("m5", "5", "모듈 5", ext_page()), Page("m51", "5-1", "모듈 5-1 웹", web51_page()), Page("tips", "💡", "모델·토큰", tips_page()), Page("ap", "+", "부록", ap)]
 build(OUT / "index.html", pages, title="금진 바이브코딩 · 말로 만드는 내 업무 도구",
       description="㈜금진 임직원을 위한 바이브코딩 실습 교안 — 개념 이해, Claude Code CLI 환경 셋팅, 스킬·MCP(노션)까지 단계별로 따라 합니다.",
       brand=("GJ", "말로 만드는 내 업무 도구", "㈜금진 바이브코딩"), site_url=SITE, og_image="og_image.jpg",
-      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + DESK_CSS + NT_CSS + EXT_CSS + COMMON_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}.wrap :not(pre)>code{font-family:Consolas,'D2Coding','Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:.95em}")
+      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + DESK_CSS + NT_CSS + EXT_CSS + W51_CSS + COMMON_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}.wrap :not(pre)>code{font-family:Consolas,'D2Coding','Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:.95em}")
 print("wrote", OUT / "index.html")
