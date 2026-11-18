@@ -13,6 +13,7 @@ from tips import tips_page
 from common import COMMON_CSS, teach
 from ext import EXT_CSS, ext_page
 from web51 import W51_CSS, web51_page
+from m6 import M6_CSS, m6_page
 from m3 import m3_page
 from m4 import m4_page
 from mocks_notion import NT_CSS
@@ -59,6 +60,7 @@ home = hero("㈜금진 · AI 실무 역량 과정", "말로 만드는<br><em>내
         ["모듈 2", "4시간+ (현장 조절)", "PowerShell, Git·Claude Code·Python 설치, 첫 대화, 되돌리기", "노트북(설치 권한), 충전기"],
         ["모듈 3", "4시간", "폴더 틀·규칙 파일(CLAUDE.md), 데이터 읽히기·정제·대시보드·검증, 내 도구 설계서", "모듈 2 완료 PC"],
         ["모듈 4", "4시간", "부서별 트랙 A–E 실습, 검증·공유·시연", "설계서, 마스킹한 부서 데이터(없으면 샘플 데이터)"],
+        ["모듈 6", "4시간", "크롬 속 Claude(사이드 패널)와 버튼 설계 인터뷰 → 구글 시트 + Apps Script로 나만의 시트 앱(집계·표시·입력 창 버튼)", "크롬, Claude 유료 요금제, 구글 계정"],
         ["모듈 5-1", "약 1시간 30분", "claude.ai 웹·앱에서: 대화로 만든 결과물을 말로 스킬로 만들어 올리고 실행, 커넥터(MCP)로 노션 연결", "Claude 계정(파일 기능 켜기), 노션 계정"],
         ["모듈 5", "약 3시간 30분 (+ 심화 선택 약 60분)", "새 프로젝트 폴더(복습), 스킬 만들기·실행, MCP 개념과 노션 연결 실습. 심화: 날씨·엑셀 MCP 직접 만들기", "모듈 3 완료 PC, 노션 계정(무료 가능)"]])
     + section("꼭 지킬 원칙 3가지")
@@ -150,6 +152,9 @@ TERMS = [  # 용어, 뜻, 금진 비유, 단계
     ("MCP", "AI 일꾼이 노션 같은 바깥 프로그램과 연결되는 표준 규격", "협력사 출입증과 전용 통로(표준 커넥터)", "5-11"),
     ("API", "프로그램끼리 정보를 주고받는 출입구. 사이트가 열어 두면 MCP를 직접 만들어 연결할 수 있음", "거래처 전용 납품 창구", "5-20"),
     ("커넥터", "claude.ai 웹·앱에서 MCP 연결을 부르는 이름. 사용자 지정 > 커넥터에서 연결", "웹 창구에 달아 둔 협력사 전용 통로", "웹-6"),
+    ("Claude in Chrome", "크롬 확장 프로그램. 오른쪽 사이드 패널에서 지금 보는 웹 화면을 같이 보고 조작함", "옆자리에 앉아 화면을 같이 보는 선배", "6-1"),
+    ("Apps Script", "구글 시트의 버튼·메뉴 뒤에서 실행되는 코드(확장 프로그램 > Apps Script)", "현황판 뒤의 작업자", "6-6"),
+    ("스크립트 할당", "시트 위 그림(버튼)에 실행할 함수 이름을 연결하는 것", "버튼에 작업 지시서 붙이기", "6-9"),
     ("OAuth(허용 로그인)", "비밀번호를 넘기지 않고, 해당 서비스 화면에서 ‘연결 허용’만 해 주는 로그인 방식", "방문증 발급 — 열쇠는 주지 않음", "5-14"),
 ]
 
@@ -652,6 +657,10 @@ ap = wrap(
         ["claude mcp list 에 Failed to connect", "네트워크가 mcp.notion.com 차단 또는 주소 오타", "강사에게 알리기 · claude mcp remove notion 후 다시 추가"],
         ["노션 페이지를 못 찾음", "다른 워크스페이스로 허용함", "/mcp → notion → 다시 인증하고 워크스페이스 확인"],
         ["(웹) 스킬 업로드가 안 됨", "ZIP 안에 폴더 없이 파일만 있음 · 폴더 이름과 name이 다름", "monthly-report 폴더째 압축, 또는 정답 예시 ZIP 사용(웹-4)"],
+        ["(시트) Google에서 확인하지 않은 앱", "내가 만든 스크립트를 처음 실행할 때 뜨는 정상 화면", "고급 → (프로젝트)로 이동 → 권한 읽고 허용(6-8). 회사 계정에서 차단되면 개인 계정"],
+        ["(시트) 🏭 금진 도구 메뉴가 안 보임", "저장 안 함 또는 시트를 새로고침 안 함", "Apps Script 저장 → 시트 탭 F5(6-8)"],
+        ["(시트) 스크립트 함수를 찾을 수 없음", "스크립트 할당에 쓴 함수 이름 오타", "괄호 없이 정확한 함수 이름(6-9)"],
+        ["(크롬) 사이드 패널에 Claude가 없음", "무료 요금제 · 크롬이 아닌 브라우저 · 회사 정책", "유료 요금제 계정으로 로그인, 크롬에서(6-1)"],
         ["(웹) 채팅에서 노션을 못 씀", "그 대화에서 커넥터를 안 켬", "입력창 ＋ → 커넥터 → Notion 켜기(웹-8)"],
         ["No module named 'mcp.server.fastmcp'", "MCP 부품 2.x에서 이름이 바뀜(FastMCP → MCPServer)", "“설치된 mcp 버전에 맞게 고쳐줘”(5-21)"],
         ["직접 만든 MCP가 npm·node를 요구함", "요청문에 언어를 안 정해 Node.js로 만듦", "“Python으로 다시 만들어줘”(5-21)"],
@@ -675,11 +684,13 @@ ap = wrap(
         ["1주 전", "노트북 설치 권한·보안 프로그램·사내망(claude.ai, github.com, python.org, pip) 접속 확인", "1-11, 2-6~2-12"],
         ["1주 전", "트랙 배정(기술개발 5명을 B 3명·C 2명으로) 확정. 실데이터 수령일과 마스킹 담당자 지정. 원청 자료를 AI에 넣어도 되는 범위 확인", "3-11, 모듈 4"],
         ["1주 전", "교육생 노션 계정 안내(개인 이메일 무료 가입, 실습용 워크스페이스) · 사내망에서 notion.com, mcp.notion.com 접속 확인", "5-12~5-14"],
+        ["1주 전", "(모듈 6) 교육생 크롬 설치·Claude 유료 요금제 확인 · 회사 구글 계정에서 Apps Script와 외부 앱 승인이 허용되는지 확인(안 되면 개인 구글 계정 안내)", "6-1, 6-6, 6-8"],
         ["1주 전", "(심화를 할 때) 사내망에서 api.open-meteo.com, geocoding-api.open-meteo.com, pypi.org(pip 설치) 접속 확인", "5-21, 5-22"],
         ["3일 전", "강사 PC에서 모듈 1·2 전 단계 리허설 → 화면 문구가 다르면 교안 수정, 실제 캡처를 shots/에 저장", "전체"],
         ["3일 전", "1-1 라이브 시연용 demo 폴더 + 백업 완성본 준비(가상 MES 데이터)", "1-1"],
         ["3일 전", "강사 PC에서 모듈 3 전 단계와 모듈 4 트랙 A~E 요청문 리허설 — 트랙 카드의 ‘성공하면’ 숫자와 같은지 확인하고 트랙별 완성본을 백업으로 준비", "모듈 3·4"],
         ["3일 전", "강사 PC에서 모듈 5 리허설 — /memory·/mcp 메뉴, 노션 허용 화면, 노션 도구 권한 창 문구를 확인하고 캡처 교체", "5-3, 5-14, 5-15"],
+        ["3일 전", "(모듈 6) 강사 PC에서 6-1~6-13 리허설 — 사이드 패널 승인 방식 이름, 시트 권한 창, Claude가 만든 코드로 2.7·3.7·1.9·26행 확인, 캡처 교체", "모듈 6"],
         ["3일 전", "(모듈 5-1을 할 때) claude.ai에서 웹-1~웹-9 리허설 — 설정·사용자 지정 메뉴 이름, 스킬 업로드, 노션 커넥터 허용 화면을 확인하고 캡처 교체", "웹-1~웹-9"],
         ["3일 전", "(심화를 할 때) 강사 Windows PC에서 5-21·5-22 요청문 리허설 — 클로가 만든 MCP가 Connected인지, 3호기 4.1%가 나오는지 확인", "5-21, 5-22"],
         ["3일 전", "(선택) 캐릭터 이미지 11장 준비 — 없으면 이모지 그대로 진행", "캐릭터·용어"],
@@ -689,9 +700,9 @@ ap = wrap(
     + PROGRESS_JS)
 
 pages = [Page("home", "", "홈", home), Page("terms", "★", "캐릭터·용어", glossary), Page("m1", "1", "모듈 1", m1), Page("m2", "2", "모듈 2", m2),
-         Page("m3", "3", "모듈 3", m3_page()), Page("m4", "4", "모듈 4", m4_page()), Page("m5", "5", "모듈 5", ext_page()), Page("m51", "5-1", "모듈 5-1 웹", web51_page()), Page("tips", "💡", "모델·토큰", tips_page()), Page("ap", "+", "부록", ap)]
+         Page("m3", "3", "모듈 3", m3_page()), Page("m4", "4", "모듈 4", m4_page()), Page("m5", "5", "모듈 5", ext_page()), Page("m51", "5-1", "모듈 5-1 웹", web51_page()), Page("m6", "6", "모듈 6 시트 앱", m6_page()), Page("tips", "💡", "모델·토큰", tips_page()), Page("ap", "+", "부록", ap)]
 build(OUT / "index.html", pages, title="금진 바이브코딩 · 말로 만드는 내 업무 도구",
       description="㈜금진 임직원을 위한 바이브코딩 실습 교안 — 개념 이해, Claude Code CLI 환경 셋팅, 스킬·MCP(노션)까지 단계별로 따라 합니다.",
       brand=("GJ", "말로 만드는 내 업무 도구", "㈜금진 바이브코딩"), site_url=SITE, og_image="og_image.jpg",
-      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + DESK_CSS + NT_CSS + EXT_CSS + W51_CSS + COMMON_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}.wrap :not(pre)>code{font-family:Consolas,'D2Coding','Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:.95em}")
+      extra_css=GJ_CSS + PROGRESS_CSS + DEMO_CSS + DESK_CSS + NT_CSS + EXT_CSS + W51_CSS + M6_CSS + COMMON_CSS + "ul.plain{margin:6px 0 12px 22px;line-height:1.75}h3{margin:16px 0 8px}.wrap :not(pre)>code{font-family:Consolas,'D2Coding','Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:.95em}")
 print("wrote", OUT / "index.html")

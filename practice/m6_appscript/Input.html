@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<style>
+  body{font-family:'Malgun Gothic',sans-serif;font-size:14px;margin:12px}
+  label{display:block;margin:8px 0 2px;color:#444}
+  input,select{width:100%;padding:6px;box-sizing:border-box;border:1px solid #ccc;border-radius:4px}
+  button{margin-top:14px;width:100%;padding:9px;border:0;border-radius:6px;background:#1d3a7a;color:#fff;font-weight:700}
+  #msg{margin-top:10px;color:#1f8452;white-space:pre-wrap}
+  #msg.err{color:#b3372a}
+</style>
+</head>
+<body>
+  <label>생산일자</label><input id="date" type="date">
+  <label>제품코드</label><input id="code" placeholder="예: 8299-6">
+  <label>호기</label><select id="line"><option>1</option><option>2</option><option>3</option></select>
+  <label>생산량(m)</label><input id="qty" type="number" min="1">
+  <label>불량량(m)</label><input id="bad" type="number" min="0">
+  <label>가동시간(분) · 오븐온도(℃) — 선택</label>
+  <div style="display:flex;gap:6px"><input id="minutes" type="number" placeholder="분"><input id="temp" type="number" placeholder="℃"></div>
+  <button onclick="send()">추가하기</button>
+  <div id="msg"></div>
+<script>
+  document.getElementById('date').valueAsDate = new Date();
+  function send() {
+    const ids = ['date', 'code', 'line', 'qty', 'bad', 'minutes', 'temp'], f = {};
+    ids.forEach(function (k) { f[k] = document.getElementById(k).value; });
+    const m = document.getElementById('msg'); m.className = ''; m.textContent = '저장 중…';
+    google.script.run
+      .withSuccessHandler(function (t) { m.textContent = t; document.getElementById('qty').value = ''; document.getElementById('bad').value = ''; })
+      .withFailureHandler(function (e) { m.className = 'err'; m.textContent = e.message; })
+      .addEntry(f);
+  }
+</script>
+</body>
+</html>

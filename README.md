@@ -27,6 +27,7 @@ python src/build.py .          # → index.html 다시 생성
 | `src/m3.py`, `src/m4.py` | 모듈 3(데이터 정제), 모듈 4(트랙 A~E) |
 | `src/ext.py` | 모듈 5(프로젝트 폴더·스킬·MCP 노션) |
 | `src/web51.py` | 모듈 5-1(claude.ai 웹에서 스킬 올리기·커넥터로 노션 연결) |
+| `src/m6.py` | 모듈 6(Claude in Chrome + 구글 시트 + Apps Script로 시트 앱) |
 | `src/tips.py` | 모델·토큰 꿀팁 탭 |
 | `src/common.py` | 모듈 3·4 공통 부품 |
 | `src/lessonkit.py`, `src/mocks_*.py`, `src/lesson.css`, `src/lesson_runtime.js` | 페이지 부품·모형 화면·스타일·런타임 |
@@ -40,6 +41,7 @@ python src/build.py .          # → index.html 다시 생성
 
 ```powershell
 python src/make_practice_m34.py .   # 모듈 3·4 실습 데이터 + answers.json 다시 만들기(교안 숫자도 바뀜)
+python src/make_practice_m6.py .    # 모듈 6 실습 시트(practice/m6_sheet_app.xlsx) 다시 만들기
 python src/build.py .               # 교안 빌드
 ```
 
